@@ -55,6 +55,7 @@ class Player: # model the character as a ball for now convenient hitboxes
         return self.pos.y + self.radius
 
     def update(self):
+        global clock
         self.pos.add(self.vel)
         self.vel.subtract(Vector((0,-0.0981)))
         if self.state == "rest":
@@ -63,15 +64,25 @@ class Player: # model the character as a ball for now convenient hitboxes
                 self.handle_move(move)
 
         elif self.state == "attack":
-            global clock
+            sprite.frame_index = [0,0]
             if clock % 3 == 0:
                 sprite.step_frame()
                 self.animation_frame += 1
-            self.move_right(5)
+            self.move_right(1)
             if self.animation_frame == 9:
                 self.animation_frame = 0
                 self.state = "rest"
-                self.remove_move("up")
+                self.remove_move("a")
+
+        elif self.state == "blink":
+            if clock % 10 == 0:
+                sprite.step_frame()
+                #self.animation_frame += 1
+            if self.animation_frame == 9:
+                self.animation_frame = 0
+                self.state = "rest"
+                self.remove_move("s")
+
         self.check_collision()
 
 
@@ -83,10 +94,6 @@ class Player: # model the character as a ball for now convenient hitboxes
                            self.color)
         '''
         sprite.draw(canvas, (self.pos), (self.diameter, self.diameter))
-
-
-#############################################################################################
-# Movement
 
     def add_move(self,key):
         self.move_buffer.append(key)
@@ -100,8 +107,10 @@ class Player: # model the character as a ball for now convenient hitboxes
             self.move_left(3)
         if move == simplegui.KEY_MAP["right"]:
             self.move_right(3)
-        if move == simplegui.KEY_MAP["up"]:
-            self.attack()
+        if move == simplegui.KEY_MAP["a"]:
+            self.__setstate__("attack")
+        if move == simplegui.KEY_MAP["s"]:
+            self.__setstate__("blink")
 
     def move_left(self,speed):
         self.pos.add(Vector((-speed,0)))
@@ -109,8 +118,8 @@ class Player: # model the character as a ball for now convenient hitboxes
     def move_right(self,speed):
         self.pos.add(Vector((speed,0)))
 
-    def attack(self):
-        self.state = "attack"
+    def __setstate__(self, state):
+        self.state = state
 
     def collide(self, object):
         self.collision.append(object)
@@ -121,7 +130,6 @@ class Player: # model the character as a ball for now convenient hitboxes
                 if isinstance(object,Platform):
                     self.vel.y = 0
                     self.pos.y = object.y - self.radius
-
 
 #############################################################################################
 # Interaction
