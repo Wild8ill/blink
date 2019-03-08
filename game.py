@@ -77,7 +77,7 @@ class Player: # model the character as a ball for now convenient hitboxes
         elif self.state == "blink":
             if clock % 10 == 0:
                 sprite.step_frame()
-                #self.animation_frame += 1
+                self.animation_frame += 1
             if self.animation_frame == 9:
                 self.animation_frame = 0
                 self.state = "rest"
