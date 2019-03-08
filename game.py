@@ -133,6 +133,7 @@ class Interaction: # takes list of objects on screen and the player
         self.obj2 = obj1
 
     def update(self):
+        pass
         # Collision?
         # What happens on iteraction
 
