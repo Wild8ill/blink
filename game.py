@@ -16,7 +16,8 @@ HEIGHT = 500
 count = 0
 clock = 0
 
-
+#############################################################################################
+# Platform
 class Platform:
     def __init__(self, y, border, color):
         self.y = y
@@ -35,7 +36,8 @@ class Platform:
         h = (ball.offsetB() >= self.edgeR)
         return h
 
-
+#############################################################################################
+# Player
 class Player: # model the character as a ball for now convenient hitboxes
     def __init__(self, pos, vel, radius, image, columns,row):
         self.pos = pos
@@ -82,6 +84,10 @@ class Player: # model the character as a ball for now convenient hitboxes
         '''
         sprite.draw(canvas, (self.pos), (self.diameter, self.diameter))
 
+
+#############################################################################################
+# Movement
+
     def add_move(self,key):
         self.move_buffer.append(key)
 
@@ -117,23 +123,27 @@ class Player: # model the character as a ball for now convenient hitboxes
                     self.pos.y = object.y - self.radius
 
 
+#############################################################################################
+# Interaction
+
 class Interaction: # takes list of objects on screen and the player
-    def __init__(self, wall, ball):
-        self.ball = ball
-        self.wall = wall
+    def __init__(self, obj1, obj2):
+        # Declare objects with interaction
+        self.obj1 = obj1
+        self.obj2 = obj1
 
     def update(self):
-        if self.wall.hit(self.ball):
-            self.ball.collide(self.wall)
-        self.ball.update()
-        #print(self.wall.hit(self.ball))
+        # Collision?
+        # What happens on iteraction
 
     def draw(self, canvas):
+        # What do draw on interaction
         self.update()
-        self.wall.draw(canvas)
-        self.ball.draw(canvas)
+        self.obj1.draw(canvas)
+        self.obj2.draw(canvas)
 
-class Collision:
+#############################################################################################
+#  Collision:
     def __init__(self,obj_1, obj_2):
         self.obj_1 = obj_1
         self.obj_2 = obj_2
@@ -144,15 +154,20 @@ class Collision:
         if distance <= self.obj_1.radius + self.obj_2.radius: # bounds, tuple of left edge, right edge, top and bottom
             return True
         return False
-###########################################################
 
+#############################################################################################
+# Global Vars
 p = Vector((100,200))
 v = Vector((0,-0.5))
 player = Player(p, v, 50,IMG,1,1)
 plat = Platform(HEIGHT-100, 1, 'red')
 i = Interaction(plat, player)
 
+#############################################################################################
+# Game Logic
 
+###############
+# Handlers
 def draw_handler(canvas):
     global WIDTH, HEIGHT, sprite,count
     if (count % 5 == 0):
@@ -162,7 +177,6 @@ def draw_handler(canvas):
     count += 1
     i.draw(canvas)
     i.update()
-
 
 def key_down_handler(key):
     player.add_move(key)
@@ -174,6 +188,8 @@ def timer_handler():
     global clock
     clock += 1
 
+###############
+# Rest of Code
 timer = simplegui.create_timer(1, timer_handler)
 timer.start()
 
