@@ -38,8 +38,10 @@ class Platform:
 
 #############################################################################################
 # Player
+# @TODO: If Left Flip Sprite
 class Player: # model the character as a ball for now convenient hitboxes
     def __init__(self, pos, vel, radius, image, columns,row):
+        self.dir = "right"
         self.pos = pos
         self.vel = vel
         self.radius = radius
@@ -104,8 +106,10 @@ class Player: # model the character as a ball for now convenient hitboxes
 
     def handle_move(self,move):
         if move == simplegui.KEY_MAP["left"]:
+            self.dir = "left"
             self.move_left(3)
         if move == simplegui.KEY_MAP["right"]:
+            self.dir = "right"
             self.move_right(3)
         if move == simplegui.KEY_MAP["a"]:
             self.__setstate__("attack")
