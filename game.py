@@ -32,8 +32,8 @@ class Platform:
                          self.border * 2 + 1,
                          self.color)
 
-    def hit(self, ball):
-        h = (ball.offsetB() >= self.edgeR)
+    def hit(self, obj):
+        h = (obj.offsetB() >= self.edgeR)
         return h
 
 #############################################################################################
@@ -127,24 +127,27 @@ class Player: # model the character as a ball for now convenient hitboxes
 # Interaction
 
 class Interaction: # takes list of objects on screen and the player
+    # Obj 1 = Item that hits another (ball)
+    # Obj 2 = Item that gets "hit" (wall)
     def __init__(self, obj1, obj2):
-        # Declare objects with interaction
+        self.obj2 = obj2
         self.obj1 = obj1
-        self.obj2 = obj1
 
     def update(self):
-        pass
-        # Collision?
-        # What happens on iteraction
+        if self.obj1.hit(self.obj2):
+            self.obj2.collide(self.obj1)
+        self.obj2.update()
+        #print(self.wall.hit(self.ball))
 
     def draw(self, canvas):
-        # What do draw on interaction
         self.update()
         self.obj1.draw(canvas)
         self.obj2.draw(canvas)
 
 #############################################################################################
-#  Collision:
+# Collision
+
+class Collision:
     def __init__(self,obj_1, obj_2):
         self.obj_1 = obj_1
         self.obj_2 = obj_2
