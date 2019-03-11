@@ -22,8 +22,8 @@ class Sprite:
     def set_frame(self, list):
         self.frame_index = list
 
-    def draw(self, canvas, pos, size,):
-        centerSource = [self.frameSize[i] * self.frame_index[i] + self.frameCentre[i] for i in [0, 1]]
+    def draw(self, canvas, pos, size, frame_index = [0,0]):
+        centerSource = [self.frameSize[i] * frame_index[i] + self.frameCentre[i] for i in [0, 1]]
         sizeSource = self.frameSize
         centerDest = pos.getP()
         sizeDest = size

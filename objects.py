@@ -1,48 +1,48 @@
-try:
-    import simplegui
-except ImportError:
-    import SimpleGUICS2Pygame.simpleguics2pygame as simplegui
-
 from vector import *
 from sprite import *
-from map_constructor import *
+from abc import ABC, abstractmethod
+IMG ='https://i.postimg.cc/7L7LYWTC/blink-sprites.png'
+sprite = Sprite(IMG, 9, 6)
 
-#IMG = 'http://www.cs.rhul.ac.uk/courses/CS1830/sprites/runnerSheet.png'
-#IMG = 'https://i.postimg.cc/vH7ssn2z/piggie.png'
-#IMG = 'https://i.postimg.cc/bwkbkgb4/excalibur.png'
-WIDTH = 800
-HEIGHT = 450
-count = 0
-clock = 0
-
-<<<<<<< HEAD
-=======
 #############################################################################################
 # Platform
 class Platform:
-    def __init__(self, y, border, color):
+    def __init__(self, y=400):
         self.y = y
-        self.border = border
-        self.color = color
+        self.border = 1
+        self.color = "red"
         self.normal = Vector((0, 1))
         self.edgeR = y + 1 + self.border
 
     def draw(self, canvas):
         canvas.draw_line((0, self.y),
-                         (WIDTH, self.y),
+                         (50000, self.y),
                          self.border * 2 + 1,
-                         self.color)
+                         self.color) # each level is 1000 pixels long
+        sprite.draw(canvas, Vector((0,self.y)), (16,16),[0,5])
 
     def hit(self, obj):
         h = (obj.offsetB() >= self.edgeR)
         return h
 
+class FloatingPlatform(Platform):
+    def __init__(self, x, width, y=400):
+        self.y = y
+        self.x = x
+        self.width = width
+        super().__init__(y)
+
+    def draw(self, canvas):
+        # canvas.draw_line((self.x, self.y),
+        #                  (self.x+self.width, self.y),
+        #                  self.border * 2 + 1,
+        #                  self.color)  # each level is 1000 pixels long
+        sprite.draw(canvas, Vector((self.x,self.y)), (16,16),[0,5])
+
 #############################################################################################
 # Player
-# @TODO: If Left Flip Sprite
 class Player: # model the character as a ball for now convenient hitboxes
-    def __init__(self, pos, vel, radius, image, columns,row):
-        self.dir = "right"
+    def __init__(self, pos, vel,radius, image, columns,row):
         self.pos = pos
         self.vel = vel
         self.radius = radius
@@ -107,10 +107,8 @@ class Player: # model the character as a ball for now convenient hitboxes
 
     def handle_move(self,move):
         if move == simplegui.KEY_MAP["left"]:
-            self.dir = "left"
             self.move_left(3)
         if move == simplegui.KEY_MAP["right"]:
-            self.dir = "right"
             self.move_right(3)
         if move == simplegui.KEY_MAP["a"]:
             self.__setstate__("attack")
@@ -135,93 +133,17 @@ class Player: # model the character as a ball for now convenient hitboxes
                 if isinstance(object,Platform):
                     self.vel.y = 0
                     self.pos.y = object.y - self.radius
->>>>>>> df0f774c3605c0d21c4cbb6c4b6c8af49be4d7c3
 
-#############################################################################################
-# Interaction
+class Enemy:
+    def __init__(self, x, y, sprite_progression=1):
+        self.collision = []
+        self.x = x
+        self.y = y
+        self.sprite_progression = sprite_progression
 
-class Interaction: # takes list of objects on screen and the player
-    # Obj 1 = Item that hits another (ball)
-    # Obj 2 = Item that gets "hit" (wall)
-    def __init__(self, obj1, obj2):
-        self.obj2 = obj2
-        self.obj1 = obj1
-
-    def update(self):
-        if self.obj1.hit(self.obj2):
-            self.obj2.collide(self.obj1)
-        self.obj2.update()
-        #print(self.wall.hit(self.ball))
-
-    def draw(self, canvas):
-        self.update()
-        self.obj1.draw(canvas)
-        self.obj2.draw(canvas)
-
-#############################################################################################
-# Collision
-
-class Collision:
-    def __init__(self,obj_1, obj_2):
-        self.obj_1 = obj_1
-        self.obj_2 = obj_2
-
-    def colliding(self):
-        distance_vector = Vector((self.obj_2.pos)) - Vector((self.obj_1.pos))
-        distance = distance_vector.length()
-        if distance <= self.obj_1.radius + self.obj_2.radius: # bounds, tuple of left edge, right edge, top and bottom
-            return True
-        return False
-
-#############################################################################################
-# Global Vars
-p = Vector((100,200))
-v = Vector((0,-0.5))
-player = Player(p, v, 32,IMG,1,1)
-plat = Platform(HEIGHT-100)
-i = Interaction(plat, player)
-
-#############################################################################################
-# Game Logic
-
-###############
-# Handlers
-def draw_handler(canvas):
-    global WIDTH, HEIGHT, sprite,count, OBJECT_ARRAY,player
-    if (count % 5 == 0):
-        #sprite.step_frame()
-        pass
-    #sprite.draw(canvas, Vector((WIDTH / 2, HEIGHT / 2)), (200, 200))
-    count += 1
-    #i.draw(canvas)
-    #i.update()
-    for object in OBJECT_ARRAY:
-        if object is not None:
-            object.draw(canvas)
-    player.draw(canvas)
-    sprite.step_frame()
-
-def key_down_handler(key):
-    player.add_move(key)
-
-def key_up_handler(key):
-    player.remove_move(key)
-
-def timer_handler():
-    global clock
-    clock += 1
-
-###############
-# Rest of Code
-
-map = MapConstructor(HEIGHT)
-OBJECT_ARRAY= map.return_obj_array("testmap.png")
-
-timer = simplegui.create_timer(1, timer_handler)
-timer.start()
-
-frame = simplegui.create_frame('Testing', WIDTH, HEIGHT)
-frame.set_draw_handler(draw_handler)
-frame.set_keydown_handler(key_down_handler)
-frame.set_keyup_handler(key_up_handler)
-frame.start()
+class Blip(Enemy):
+    def __init__(self, x, y, velocity, radius):
+        super().__init__(x,y,radius)
+        self.radius = radius
+        self.velocity = velocity
+        sprite_progression = [1,2,1,4]
