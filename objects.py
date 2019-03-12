@@ -19,7 +19,7 @@ class Platform:
                          (50000, self.y),
                          self.border * 2 + 1,
                          self.color) # each level is 1000 pixels long
-        sprite.draw(canvas, Vector((0,self.y)), (16,16),[0,5])
+        sprite.draw(canvas, Vector((0,self.y)), (16,16),[0,4])
 
     def hit(self, obj):
         h = (obj.offsetB() >= self.edgeR)
