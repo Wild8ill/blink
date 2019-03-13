@@ -1,48 +1,30 @@
-from vector import *
-from sprite import *
-from abc import ABC, abstractmethod
-IMG ='https://i.postimg.cc/7L7LYWTC/blink-sprites.png'
-sprite = Sprite(IMG, 9, 6)
-
+<<<<<<< HEAD
+=======
 #############################################################################################
 # Platform
 class Platform:
-    def __init__(self, y=400):
+    def __init__(self, y, border, color):
         self.y = y
-        self.border = 1
-        self.color = "red"
+        self.border = border
+        self.color = color
         self.normal = Vector((0, 1))
         self.edgeR = y + 1 + self.border
 
     def draw(self, canvas):
         canvas.draw_line((0, self.y),
-                         (50000, self.y),
+                         (WIDTH, self.y),
                          self.border * 2 + 1,
-                         self.color) # each level is 1000 pixels long
-        sprite.draw(canvas, Vector((0,self.y)), (16,16),[0,4])
+                         self.color)
 
     def hit(self, obj):
         h = (obj.offsetB() >= self.edgeR)
         return h
 
-class FloatingPlatform(Platform):
-    def __init__(self, x, width, y=400):
-        self.y = y
-        self.x = x
-        self.width = width
-        super().__init__(y)
-
-    def draw(self, canvas):
-        # canvas.draw_line((self.x, self.y),
-        #                  (self.x+self.width, self.y),
-        #                  self.border * 2 + 1,
-        #                  self.color)  # each level is 1000 pixels long
-        sprite.draw(canvas, Vector((self.x,self.y)), (16,16),[0,5])
-
 #############################################################################################
 # Player
 class Player: # model the character as a ball for now convenient hitboxes
-    def __init__(self, pos=Vector((0,0)), vel=Vector((0,0)),radius=32, image=IMG, columns=1,row=1):
+    def __init__(self, pos, vel, radius, image, columns,row):
+        self.dir = "right"
         self.pos = pos
         self.vel = vel
         self.radius = radius
@@ -107,8 +89,10 @@ class Player: # model the character as a ball for now convenient hitboxes
 
     def handle_move(self,move):
         if move == simplegui.KEY_MAP["left"]:
+            self.dir = "left"
             self.move_left(3)
         if move == simplegui.KEY_MAP["right"]:
+            self.dir = "right"
             self.move_right(3)
         if move == simplegui.KEY_MAP["a"]:
             self.__setstate__("attack")
@@ -133,17 +117,4 @@ class Player: # model the character as a ball for now convenient hitboxes
                 if isinstance(object,Platform):
                     self.vel.y = 0
                     self.pos.y = object.y - self.radius
-
-class Enemy:
-    def __init__(self, x, y, sprite_progression=1):
-        self.collision = []
-        self.x = x
-        self.y = y
-        self.sprite_progression = sprite_progression
-
-class Blip(Enemy):
-    def __init__(self, x, y, velocity, radius):
-        super().__init__(x,y,radius)
-        self.radius = radius
-        self.velocity = velocity
-        sprite_progression = [1,2,1,4]
+>>>>>>> df0f774c3605c0d21c4cbb6c4b6c8af49be4d7c3

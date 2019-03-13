@@ -14,11 +14,10 @@ class MapConstructor:
         temp_array = [x for x in range(size)]
         for index in temp_array:
             temp_array[index] = [False for x in range(size)]
-        print(temp_array)
         return temp_array
 
 
-    def return_obj_array(self, filename):
+    def generate_map(self, filename):
         object_array = []
         try:
             map = Image.open(filename)
@@ -35,18 +34,22 @@ class MapConstructor:
                 pixel_matrix[row][column] = True
                 if r != 255 or g != 255 or b != 255:
                     hexval = rgb2hex(r,g,b)
-                    object_array.append(self.object_type(hexval,(row,column)))
+                    object_to_add = self.object_type(hexval,(row,column))
+
+                    if object_to_add is not None:
+                        print(type(object_to_add),hexval)
+                        object_array.append(object_to_add)
         return object_array
+
 
     def object_type(self, hexval,*arg):
         X = arg[0][0] * 16
         Y = arg[0][1] * 16
-        print(X,Y)
-
+        hexval = hexval.lower()
         # a 32 pixel wide sprite should be 16 pixels across
         object_dict = {
             "#000000":Platform(),
-            "#570000":FloatingPlatform(X,32,Y)
-            #"#00e9e5":Player(Vector((X,Y)))
+            "#570000":FloatingPlatform(X,32,Y),
+            "#00e9e5":Player(Vector((X,Y)),Vector((0,0)),32,IMG,9,5)
         }
         return object_dict.get(hexval)
