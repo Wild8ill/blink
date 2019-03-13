@@ -16,7 +16,8 @@ map = None
 
 def return_level_file(level_id):
     level_dict = {
-        1:"testmap.png"
+        1:"testmap.png",
+        2:"level2.png"
     }
     return level_dict.get(level_id)
 
@@ -67,7 +68,7 @@ def timer_handler():
 
 ###############
 # Rest of Code
-setup_level(1)
+setup_level(2)
 timer = simplegui.create_timer(1, timer_handler)
 timer.start()
 
