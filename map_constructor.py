@@ -27,6 +27,7 @@ class MapConstructor:
             sys.exit(1)
 
         pixel_matrix = self.generate_pixel_array(map.size[0])
+        print(map.size)
         rgb_map = map.convert("RGB")
         for column in range(map.size[0]):
             for row in range(map.size[1]):
