@@ -24,7 +24,7 @@ def return_level_file(level_id):
 
 def setup_level(level_id):
     global MAP_CONSTRUCTOR, map, player
-    map = MAP_CONSTRUCTOR.generate_map(return_level_file(level_id)) # gets the map corresponding to the level id passed
+    map = MAP_CONSTRUCTOR.generate_map("levels/"+return_level_file(level_id)) # gets the map corresponding to the level id passed
     for object in map:
         if isinstance(object, Player):
             player = object
