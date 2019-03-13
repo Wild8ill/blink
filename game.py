@@ -13,9 +13,11 @@ clock = 0
 player = None  # will be overwritten
 MAP_CONSTRUCTOR = MapConstructor(HEIGHT)
 map = None
+state = 0 # shows the state of the game. 0 is the welcome screen, different numbers are subsequent levels
 
 def return_level_file(level_id):
     level_dict = {
+        0:"welcome.png",
         1:"testmap.png",
         2:"level2.png"
     }
@@ -54,10 +56,12 @@ def draw_handler(canvas):
     for object in map:
         object.draw(canvas)
     #player.draw(canvas)
+    player.update()
     player.sprite.step_frame()
 
 def key_down_handler(key):
     player.add_move(key)
+    print(player.state)
 
 def key_up_handler(key):
     player.remove_move(key)

@@ -1,8 +1,12 @@
+try:
+    import simplegui
+except ImportError:
+    import SimpleGUICS2Pygame.simpleguics2pygame as simplegui
+
 from vector import *
 from sprite import *
 from abc import ABC, abstractmethod
 IMG ='https://i.postimg.cc/7L7LYWTC/blink-sprites.png'
-sprite = Sprite(IMG, 9, 6)
 
 #############################################################################################
 # Platform
@@ -13,13 +17,14 @@ class Platform:
         self.color = "red"
         self.normal = Vector((0, 1))
         self.edgeR = y + 1 + self.border
+        self.sprite = Sprite(IMG, 9, 6)
 
     def draw(self, canvas):
         canvas.draw_line((0, self.y),
                          (50000, self.y),
                          self.border * 2 + 1,
                          self.color) # each level is 1000 pixels long
-        sprite.draw(canvas, Vector((0,self.y)), (16,16),[0,4])
+        self.sprite.draw(canvas, Vector((0,self.y)), (16,16),[0,4])
 
     def hit(self, obj):
         h = (obj.offsetB() >= self.edgeR)
@@ -37,7 +42,7 @@ class FloatingPlatform(Platform):
         #                  (self.x+self.width, self.y),
         #                  self.border * 2 + 1,
         #                  self.color)  # each level is 1000 pixels long
-        sprite.draw(canvas, Vector((self.x,self.y)), (16,16),[0,5])
+        self.sprite.draw(canvas, Vector((self.x,self.y)), (16,16),[0,5])
 
 #############################################################################################
 # Player
@@ -62,14 +67,14 @@ class Player: # model the character as a ball for now convenient hitboxes
         self.pos.add(self.vel)
         self.vel.subtract(Vector((0,-0.0981)))
         if self.state == "rest":
-            sprite.set_frame([8,0])
+            self.sprite.set_frame([8,0])
             for move in self.move_buffer:
                 self.handle_move(move)
 
         elif self.state == "attack":
-            sprite.frame_index = [0,0]
+            self.sprite.frame_index = [0,0]
             if clock % 3 == 0:
-                sprite.step_frame()
+                self.sprite.step_frame()
                 self.animation_frame += 1
             self.move_right(1)
             if self.animation_frame == 9:
@@ -79,7 +84,7 @@ class Player: # model the character as a ball for now convenient hitboxes
 
         elif self.state == "blink":
             if clock % 10 == 0:
-                sprite.step_frame()
+                self.sprite.step_frame()
                 self.animation_frame += 1
             if self.animation_frame == 9:
                 self.animation_frame = 0
@@ -96,7 +101,7 @@ class Player: # model the character as a ball for now convenient hitboxes
                            self.color,
                            self.color)
         '''
-        sprite.draw(canvas, (self.pos), (self.diameter, self.diameter))
+        self.sprite.draw(canvas, (self.pos), (self.diameter, self.diameter))
 
     def add_move(self,key):
         self.move_buffer.append(key)
