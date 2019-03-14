@@ -32,17 +32,58 @@ def setup_level(level_id):
 #############################################################################################
 # Collision
 
-class Collision:
-    def __init__(self,obj_1, obj_2):
+## What is needed
+### - 
+### 
+### 
+class Interaction:
+    def __init__(self):
+        # Arr of Collision_Handler
+        self.collisionArr = []
+
+
+
+# Handles the collision between two objects
+class Collision_Handler:
+    def __init__(self, obj_1, obj_2):
         self.obj_1 = obj_1
         self.obj_2 = obj_2
+        # State of collision
+        self.isColliding = False
 
-    def colliding(self):
+    # Will say collision is True when collision happens
+    def collision_check(self):
         distance_vector = Vector((self.obj_2.pos)) - Vector((self.obj_1.pos))
         distance = distance_vector.length()
-        if distance <= self.obj_1.radius + self.obj_2.radius: # bounds, tuple of left edge, right edge, top and bottom
-            return True
-        return False
+        if distance <= self.obj_1.radius + self.obj_2.radius:
+            if not self.isColliding: 
+                self.isColliding = True
+        self.isColliding = False
+
+    # Check the type of the objects colliding
+        # Then perform an action based on the type of collison happening
+    def collision_action(self):  
+        # Check if Player
+        if isinstance(self.obj_1,  Player): # Check if instance of Player
+            if isinstance(self.obj_2, Enemy):
+                pass
+            if isinstance(self.obj_2, Platform):
+                pass
+
+        # Check if Platform      
+        if isinstance(self.obj_1, Platform): # Check if instance of Platform
+            if isinstance(self.obj_2, Player): # Check if instance of Player
+                pass
+            if isinstance(self.obj_2, Enemy): # Check if instance of AI
+                pass
+
+        # Check if AI
+        if isinstance(self.obj_1,  Enemy): # Check if instance of AI
+            if isinstance(self.obj_2, Player):
+                pass
+            if isinstance(self.obj_2, Platform):
+                pass
+
 
 #############################################################################################
 # Game Logic
