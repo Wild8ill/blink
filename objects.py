@@ -64,23 +64,27 @@ class Player: # model the character as a ball for now convenient hitboxes
         self.HEIGHT = height
         self.MAP = map
         self.vector_transform = Vector((self.WIDTH/2,self.HEIGHT/2)) - self.pos
+        self.terminal_vel = 2
+        self.level_finished = False
 
     def offsetB(self):
         return self.pos.y + self.radius
 
     def update(self,clock):
+        if self.level_finished:
+            return "Next Level"
         self.pos.add(self.vel)
-        #self.vel.subtract(Vector((0,-0.0981)))
+        self.vel.subtract(Vector((0,-0.0981)))
         self.MAP.update_positions() # calculates all relative positions for objects, now that player is set up properly
 
         if self.state == "rest":
-            self.sprite.set_frame([8,0])
+            self.sprite.set_frame([0,0])
             for move in self.move_buffer:
                 self.handle_move(move)
 
         elif self.state == "attack":
             self.sprite.set_frame([0,0])
-            if clock.return_mod(3):
+            if clock.return_mod(2):
                 self.sprite.step_frame()
                 self.animation_frame += 1
             self.move_right(1)
@@ -121,18 +125,28 @@ class Player: # model the character as a ball for now convenient hitboxes
     def handle_move(self,move):
         if move == simplegui.KEY_MAP["left"]:
             self.move_left(3)
+        if move == simplegui.KEY_MAP["up"]:
+            self.jump()
+            self.remove_move(move)
         if move == simplegui.KEY_MAP["right"]:
             self.move_right(3)
         if move == simplegui.KEY_MAP["a"]:
             self.__setstate__("attack")
         if move == simplegui.KEY_MAP["s"]:
             self.__setstate__("blink")
+        if move == simplegui.KEY_MAP["e"]:
+            self.level_finished = True
 
     def move_left(self,speed):
-        self.pos.add(Vector((-speed,0)))
+        if self.vel.x < self.terminal_vel:
+            self.vel.add(Vector((-speed,0)))
 
     def move_right(self,speed):
-        self.pos.add(Vector((speed,0)))
+        if self.vel.x < self.terminal_vel:
+            self.vel.add(Vector((speed,0)))
+
+    def jump(self,type="single"):
+        self.vel.add(Vector((0,-3)))
 
     def __setstate__(self, state):
         self.state = state
@@ -192,8 +206,8 @@ class Camera:
     def within_bounds(self,position):
         x = position[self.X]
         y = position[self.Y]
-        if x <= self.right_edge and x >= self.left_edge: #checks x coordinate
-            if y >= self.top_edge and y <= self.bottom_edge: # checks y, note y increases downwards
+        if x <= self.right_edge+16 and x >= self.left_edge-16: #checks x coordinate against the edges. Added a tolerance for smoothness
+            if y >= self.top_edge-16 and y <= self.bottom_edge+16: # checks y, note y increases downwards
                 return True
         return False
 

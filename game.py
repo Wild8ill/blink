@@ -10,17 +10,19 @@ from map_constructor import *
 WIDTH = 800
 HEIGHT = 450
 player = None  # will be overwritten
-camera = None
+camera = None # will also be overwritten
 MAP_CONSTRUCTOR = MapConstructor(WIDTH,HEIGHT)
 map = None
 state = 0 # shows the state of the game. 0 is the welcome screen, different numbers are subsequent levels
 clock = Clock()
+level = 1
 
-def return_level_file(level_id):
+def return_level_file(level_id): # a dictionary wrapper to allow the generation and passing of levels automatically
     level_dict = {
         0:"welcome.png",
         1:"testmap.png",
-        2:"level2.png"
+        2:"level2.png",
+        3:"level3.png"
     }
     return level_dict.get(level_id)
 
@@ -98,11 +100,13 @@ class Collision_Handler:
 ###############
 # Handlers
 def draw_handler(canvas):
-    global WIDTH, HEIGHT, sprite, camera, player, clock
+    global WIDTH, HEIGHT, sprite, camera, player, clock, level
     for object in camera.objects_to_render():
         if not isinstance(object,Player):
             object.draw(canvas)
-    player.update(clock)
+    if player.update(clock) == "Next Level":
+        level += 1
+        setup_level(level)
     player.draw(canvas)
     MAP_CONSTRUCTOR.PLAYER = player # make player current so vector transform is updated
     camera.update()
@@ -119,10 +123,9 @@ def timer_handler():
 
 ###############
 # Rest of Code
-setup_level(1)
+setup_level(level)
 timer = simplegui.create_timer(1, timer_handler)
 timer.start()
-
 frame = simplegui.create_frame('Testing', WIDTH, HEIGHT)
 frame.set_draw_handler(draw_handler)
 frame.set_keydown_handler(key_down_handler)
