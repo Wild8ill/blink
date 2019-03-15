@@ -68,10 +68,9 @@ class Player: # model the character as a ball for now convenient hitboxes
     def offsetB(self):
         return self.pos.y + self.radius
 
-    def update(self):
-        global clock
+    def update(self,clock):
         self.pos.add(self.vel)
-        self.vel.subtract(Vector((0,-0.0981)))
+        #self.vel.subtract(Vector((0,-0.0981)))
         self.MAP.update_positions() # calculates all relative positions for objects, now that player is set up properly
 
         if self.state == "rest":
@@ -80,8 +79,8 @@ class Player: # model the character as a ball for now convenient hitboxes
                 self.handle_move(move)
 
         elif self.state == "attack":
-            self.sprite.frame_index = [0,0]
-            if clock % 3 == 0:
+            self.sprite.set_frame([0,0])
+            if clock.return_mod(3):
                 self.sprite.step_frame()
                 self.animation_frame += 1
             self.move_right(1)
@@ -91,14 +90,14 @@ class Player: # model the character as a ball for now convenient hitboxes
                 self.remove_move("a")
 
         elif self.state == "blink":
-            if clock % 10 == 0:
+            if clock.return_mod(10):
+                print("change")
                 self.sprite.step_frame()
                 self.animation_frame += 1
             if self.animation_frame == 9:
                 self.animation_frame = 0
                 self.state = "rest"
                 self.remove_move("s")
-
         self.vector_transform = Vector((self.WIDTH/2,self.HEIGHT/2)) - (self.pos)
         self.check_collision()
 
@@ -200,3 +199,18 @@ class Camera:
 
     def __str__(self):
         return str(self.midpoint)
+
+class Clock:
+    def __init__(self):
+        self.__clock = 0
+
+    def increment_clock(self):
+        self.__clock += 1
+
+    def return_mod(self,mod):
+        if self.__clock % mod == 0:
+            return True
+        return False
+
+    def __str__(self):
+        return str(self.__clock)

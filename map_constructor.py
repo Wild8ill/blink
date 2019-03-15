@@ -75,4 +75,3 @@ class MapConstructor:
     def update_positions(self):
         for object in self.final_array:
             object.relative_pos = object.pos.copy() + self.PLAYER.vector_transform
-            print(self.PLAYER.vector_transform)
