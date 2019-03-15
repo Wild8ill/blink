@@ -11,7 +11,8 @@ WIDTH = 800
 HEIGHT = 450
 clock = 0
 player = None  # will be overwritten
-MAP_CONSTRUCTOR = MapConstructor(HEIGHT)
+camera = None
+MAP_CONSTRUCTOR = MapConstructor(WIDTH,HEIGHT)
 map = None
 state = 0 # shows the state of the game. 0 is the welcome screen, different numbers are subsequent levels
 
@@ -25,26 +26,71 @@ def return_level_file(level_id):
 
 
 def setup_level(level_id):
-    global MAP_CONSTRUCTOR, map, player
+    global MAP_CONSTRUCTOR, map, player, camera
     map = MAP_CONSTRUCTOR.generate_map("levels/"+return_level_file(level_id)) # gets the map corresponding to the level id passed
     for object in map:
         if isinstance(object, Player):
             player = object
+            camera = Camera(WIDTH,HEIGHT,player,map)
+
 
 #############################################################################################
 # Collision
 
-class Collision:
-    def __init__(self,obj_1, obj_2):
+## What is needed
+### -
+###
+###
+class Interaction:
+    def __init__(self):
+        # Arr of Collision_Handler
+        self.collisionArr = []
+        #dictionary coantining key value pairs and collision handlers
+
+
+
+# Handles the collision between two objects
+class Collision_Handler:
+    def __init__(self, obj_1, obj_2):
         self.obj_1 = obj_1
         self.obj_2 = obj_2
+        # State of collision
+        self.isColliding = False
 
-    def colliding(self):
+    # Will say collision is True when collision happens
+    def collision_check(self):
         distance_vector = Vector((self.obj_2.pos)) - Vector((self.obj_1.pos))
         distance = distance_vector.length()
-        if distance <= self.obj_1.radius + self.obj_2.radius: # bounds, tuple of left edge, right edge, top and bottom
-            return True
-        return False
+        if distance <= self.obj_1.radius + self.obj_2.radius:
+            if not self.isColliding:
+                self.isColliding = True
+        self.isColliding = False
+
+    # Check the type of the objects colliding
+        # Then perform an action based on the type of collison happening
+
+    # actually ignore this. Pass through to the individual class for actions
+    def collision_action(self):
+        # Check if Player
+        if isinstance(self.obj_1,  Player): # Check if instance of Player
+            if isinstance(self.obj_2, Enemy):
+                pass
+            if isinstance(self.obj_2, Platform):
+                pass
+
+        # Check if Platform
+        if isinstance(self.obj_1, Platform): # Check if instance of Platform
+            if isinstance(self.obj_2, Player): # Check if instance of Player
+                pass
+            if isinstance(self.obj_2, Enemy): # Check if instance of AI
+                pass
+
+        # Check if AI
+        if isinstance(self.obj_1,  Enemy): # Check if instance of AI
+            if isinstance(self.obj_2, Player):
+                pass
+            if isinstance(self.obj_2, Platform):
+                pass
 
 #############################################################################################
 # Game Logic
@@ -52,16 +98,15 @@ class Collision:
 ###############
 # Handlers
 def draw_handler(canvas):
-    global WIDTH, HEIGHT, sprite, map, player
-    for object in map:
+    global WIDTH, HEIGHT, sprite, camera, player
+    for object in camera.objects_to_render():
         object.draw(canvas)
-    #player.draw(canvas)
     player.update()
-    player.sprite.step_frame()
+    MAP_CONSTRUCTOR.PLAYER = player # make player current so vector transform is updated
+    camera.update()
 
 def key_down_handler(key):
     player.add_move(key)
-    print(player.state)
 
 def key_up_handler(key):
     player.remove_move(key)
