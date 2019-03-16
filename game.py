@@ -28,12 +28,18 @@ def return_level_file(level_id): # a dictionary wrapper to allow the generation 
 # @ TODO: REDO ALL OF INTERACTION AND COLLISION AND MAKE IT WORK
 class Interaction:
     def __init__(self):
-        # Arr of Collision_Handler
+        # Arrays of objects
         self.collisionArr = []
-        #dictionary coantining key value pairs and collision handlers
+
+    def addCollidable(self, obj1, obj2):
+        self.collisionArr.append(Collidable(obj1, obj2))
+
+    def update(self):
+        for collidable in self.collisionArr:
+            collidable.update()
 
 # Handles the collision between two objects
-class Collision_Handler:
+class Collidable:
     def __init__(self, obj_1, obj_2):
         self.obj_1 = obj_1
         self.obj_2 = obj_2
@@ -41,39 +47,16 @@ class Collision_Handler:
         self.isColliding = False
 
     # Will say collision is True when collision happens
-    def collision_check(self):
-        distance_vector = Vector((self.obj_2.pos)) - Vector((self.obj_1.pos))
-        distance = distance_vector.length()
-        if distance <= self.obj_1.radius + self.obj_2.radius:
-            if not self.isColliding:
-                self.isColliding = True
-        self.isColliding = False
-
-    # Check the type of the objects colliding
-        # Then perform an action based on the type of collison happening
-
-    # actually ignore this. Pass through to the individual class for actions
-    def collision_action(self):
-        # Check if Player
-        if isinstance(self.obj_1,  Player): # Check if instance of Player
-            if isinstance(self.obj_2, Enemy):
-                pass
-            if isinstance(self.obj_2, Platform):
-                pass
-
-        # Check if Platform
-        if isinstance(self.obj_1, Platform): # Check if instance of Platform
-            if isinstance(self.obj_2, Player): # Check if instance of Player
-                pass
-            if isinstance(self.obj_2, Enemy): # Check if instance of AI
-                pass
-
-        # Check if AI
-        if isinstance(self.obj_1,  Enemy): # Check if instance of AI
-            if isinstance(self.obj_2, Player):
-                pass
-            if isinstance(self.obj_2, Platform):
-                pass
+        # From there you can apply logic of what to do in response
+    def update(self):
+        # @TODO: Create logic for comparing objects to check collision that works
+        pass
+        # distance_vector = Vector((self.obj_2.pos)) - Vector((self.obj_1.pos))
+        # distance = distance_vector.length()
+        # if distance <= self.obj_1.radius + self.obj_2.radius:
+        #     if not self.isColliding:
+        #         self.isColliding = True
+        # self.isColliding = False
 
 #############################################################################################
 # Game Logic
@@ -90,7 +73,13 @@ class Game:
         # GAME ITEMS
         self.player = None  # will be overwritten
         self.camera = None # will also be overwritten
+        # Interactions
+        self.interaction = Interaction() # The Interactions (Collisions)
+        # Game Objects
+        self.platformArr = []
+        self.entityArr = []
 
+        
     # Handles the drawing of the game
     def draw(self, canvas):
         # Only draw objects that are in the cameras view
@@ -106,7 +95,20 @@ class Game:
         # Draw the player
         self.player.draw(canvas)
         MAP_CONSTRUCTOR.PLAYER = self.player # make player current so vector transform is updated
+        self.update() # Update Game Logic
+
+
+    # What to do every update
+    def update(self):
+        self.interaction.update() # Check every interaction
         self.camera.update()
+
+    # On new map run this to get every interaction to be modelled
+        # Added to the interaction object as a collidable
+    def model_interactions(self):
+        for entity in self.entityArr:
+            for platform in self.platformArr:
+                self.interaction.addCollidable(entity, platform)
 
     # Update the current level then run the setup for it
         ## Added so we can force level skipping to test
@@ -122,6 +124,12 @@ class Game:
             if isinstance(object, Player):
                 self.player = object
                 self.camera = Camera(WIDTH,HEIGHT, self.player, map)
+                self.entityArr.insert(0, object) # Adds player to the first position of the Entity Array
+            elif isinstance(object, Enemy):
+                self.entityArr.append(object) # Adds Enemies to the Entity Array
+            else:
+                self.platformArr.append(object) # Adds platforms to Platform Array
+        self.model_interactions() # Models the interactions between every Platform and Entity
 
 
 ###############
@@ -142,6 +150,8 @@ class Events:
 
 ###############
 # Rest of Code
+
+
 
 # Initialisation of Game
 game = Game()
