@@ -9,13 +9,9 @@ from map_constructor import *
 
 WIDTH = 800
 HEIGHT = 450
-player = None  # will be overwritten
-camera = None # will also be overwritten
 MAP_CONSTRUCTOR = MapConstructor(WIDTH,HEIGHT)
 map = None
-state = 0 # shows the state of the game. 0 is the welcome screen, different numbers are subsequent levels
 clock = Clock()
-level = 1
 
 def return_level_file(level_id): # a dictionary wrapper to allow the generation and passing of levels automatically
     level_dict = {
@@ -27,29 +23,14 @@ def return_level_file(level_id): # a dictionary wrapper to allow the generation 
     return level_dict.get(level_id)
 
 
-def setup_level(level_id):
-    global MAP_CONSTRUCTOR, map, player, camera
-    map = MAP_CONSTRUCTOR.generate_map("levels/"+return_level_file(level_id)) # gets the map corresponding to the level id passed
-    for object in map:
-        if isinstance(object, Player):
-            player = object
-            camera = Camera(WIDTH,HEIGHT,player,map)
-
-
 #############################################################################################
 # Collision
-
-## What is needed
-### -
-###
-###
+# @ TODO: REDO ALL OF INTERACTION AND COLLISION AND MAKE IT WORK
 class Interaction:
     def __init__(self):
         # Arr of Collision_Handler
         self.collisionArr = []
         #dictionary coantining key value pairs and collision handlers
-
-
 
 # Handles the collision between two objects
 class Collision_Handler:
@@ -96,39 +77,88 @@ class Collision_Handler:
 
 #############################################################################################
 # Game Logic
+class Game: 
+    def __init__(self):
+        # PLAYER LIFE
+        self.MAXLIVES = 3
+        self.currentLives = self.MAXLIVES
+        # SCORE
+        self.score = 0
+        # In PLAY 
+        self.inPlay = False # Are we playing the game or at main menu
+        self.level = 1 # The Current Level
+        # GAME ITEMS
+        self.player = None  # will be overwritten
+        self.camera = None # will also be overwritten
+
+    # Handles the drawing of the game
+    def draw(self, canvas):
+        # Only draw objects that are in the cameras view
+        for object in self.camera.objects_to_render():
+            if not isinstance(object, Player):
+                object.draw(canvas)
+
+        # Update the current level
+        if self.player.update(clock) == "Next Level":
+            self.level += 1 # Increase the level id of the game object
+            self.setup_level() # Call the constructor of the object
+        
+        # Draw the player
+        self.player.draw(canvas)
+        MAP_CONSTRUCTOR.PLAYER = self.player # make player current so vector transform is updated
+        self.camera.update()
+
+    # Update the current level then run the setup for it
+        ## Added so we can force level skipping to test
+    def set_level(self, level):
+        self.level = level
+        self.setup_level()
+
+    # Construct the current level
+    def setup_level(self):
+        global MAP_CONSTRUCTOR, map
+        map = MAP_CONSTRUCTOR.generate_map("levels/"+return_level_file(self.level)) # gets the map corresponding to the level of the game object.
+        for object in map:
+            if isinstance(object, Player):
+                self.player = object
+                self.camera = Camera(WIDTH,HEIGHT, self.player, map)
+
 
 ###############
-# Handlers
-def draw_handler(canvas):
-    global WIDTH, HEIGHT, sprite, camera, player, clock, level
-    for object in camera.objects_to_render():
-        if not isinstance(object,Player):
-            object.draw(canvas)
-    if player.update(clock) == "Next Level":
-        level += 1
-        setup_level(level)
-    player.draw(canvas)
-    MAP_CONSTRUCTOR.PLAYER = player # make player current so vector transform is updated
-    camera.update()
+# Event Handling
+class Events:
+    def __init__(self):
+        pass
 
-def key_down_handler(key):
-    player.add_move(key)
+    def key_down(self, key):
+        game.player.add_move(key)
 
-def key_up_handler(key):
-    player.remove_move(key)
+    def key_up(self, key):
+        game.player.remove_move(key)
 
-def timer_handler():
-    global clock
-    clock.increment_clock()
+    def timer(self):
+        global clock
+        clock.increment_clock()
 
 ###############
 # Rest of Code
-setup_level(level)
-timer = simplegui.create_timer(1, timer_handler)
-timer.start()
-frame = simplegui.create_frame('Testing', WIDTH, HEIGHT)
-frame.set_draw_handler(draw_handler)
-frame.set_keydown_handler(key_down_handler)
-frame.set_keyup_handler(key_up_handler)
+
+# Initialisation of Game
+game = Game()
+game.setup_level()
+
+# Canvas and Drawing Setup
+frame = simplegui.create_frame('Blink', WIDTH, HEIGHT)
+frame.set_draw_handler(game.draw)
+
+# Event Handlong
+event = Events() # Event Handler Object
+timer = simplegui.create_timer(1, event.timer)
+    # Register Key down and Key Up events of key press
+frame.set_keydown_handler(event.key_down) # On Key Down
+frame.set_keyup_handler(event.key_up) # On Key Up
+
 print("big yeet")
+# Event Handling
+timer.start()
 frame.start()
