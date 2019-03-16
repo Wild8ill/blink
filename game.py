@@ -25,29 +25,53 @@ def return_level_file(level_id): # a dictionary wrapper to allow the generation 
 
 #############################################################################################
 # Collision
-# @ TODO: REDO ALL OF INTERACTION AND COLLISION AND MAKE IT WORK
 class Interaction:
     def __init__(self):
         # Arrays of objects
-        self.collisionArr = []
+        self.platformCollisionArr = [] # Every Entity V Platform
+        self.entityCollisionArr = []  # Player V Entity
 
-    def addCollidable(self, obj1, obj2):
-        self.collisionArr.append(Collidable(obj1, obj2))
+    # Collision of Entity vs Platform/Object
+    def addPlatformCollidable(self, entity, obj2):
+        self.platformCollisionArr.append(PlatformCollidable(entity, obj2))
+
+    # Collision of Entity vs Entity
+    def addEntityCollidable(self, entity_one, entity_two):
+        self.entityCollisionArr.append(EntityCollidable(entity_one, entity_two))
 
     def update(self):
-        for collidable in self.collisionArr:
-            collidable.update()
+        # Update all entity vs platform collisions
+        for platformCollidable in self.platformCollisionArr:
+            platformCollidable.update()
+        # Update all entity vs entity collisions
+        for entityCollidable in self.entityCollisionArr:
+            entityCollidable.update()
+
 
 # Handles the collision between two objects
 class Collidable:
     def __init__(self, obj_1, obj_2):
-        self.obj_1 = obj_1 # "Entity" - Spherical Hitbox
-        self.obj_2 = obj_2 # "Platform" - Rectangular Hitbox
+        self.obj_1 = obj_1 
+        self.obj_2 = obj_2 
         # State of collision
         self.isColliding = False
 
-    # Will say collision is True when collision happens
-        # From there you can apply logic of what to do in response
+class PlatformCollidable(Collidable):    
+    # Obj 1 = Entity = Sphere
+    # Obj 2 = Platform = Rectangle 
+    def update(self):
+        # @TODO: Create logic for comparing objects to check collision that works
+        pass
+        # distance_vector = Vector((self.obj_2.pos)) - Vector((self.obj_1.pos))
+        # distance = distance_vector.length()
+        # if distance <= self.obj_1.radius + self.obj_2.radius:
+        #     if not self.isColliding:
+        #         self.isColliding = True
+        # self.isColliding = False
+
+class EntityCollidable(Collidable):  
+    # Obj 1 = Entity = Sphere
+    # Obj 2 = Entity = Sphere
     def update(self):
         # @TODO: Create logic for comparing objects to check collision that works
         pass
@@ -106,9 +130,17 @@ class Game:
     # On new map run this to get every interaction to be modelled
         # Added to the interaction object as a collidable
     def model_interactions(self):
+        # Every Entity vs Platform Interaction
         for entity in self.entityArr:
             for platform in self.platformArr:
-                self.interaction.addCollidable(entity, platform)
+                self.interaction.addPlatformCollidable(entity, platform)
+
+        # Every Entity vs Entity
+        for entityOne in self.entityArr:
+            for entityTwo in self.entityArr:
+                if entityOne is not entityTwo:
+                    self.interaction.addEntityCollidable(entityOne, entityTwo)
+
 
     # Update the current level then run the setup for it
         ## Added so we can force level skipping to test
