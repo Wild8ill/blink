@@ -41,8 +41,8 @@ class Interaction:
 # Handles the collision between two objects
 class Collidable:
     def __init__(self, obj_1, obj_2):
-        self.obj_1 = obj_1
-        self.obj_2 = obj_2
+        self.obj_1 = obj_1 # "Entity" - Spherical Hitbox
+        self.obj_2 = obj_2 # "Platform" - Rectangular Hitbox
         # State of collision
         self.isColliding = False
 
