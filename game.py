@@ -50,6 +50,15 @@ class Collision_Handler:
                 self.isColliding = True
         self.isColliding = False
 
+    def object_platform_collision(self):
+        object = self.obj_1
+        platform = self.obj_2
+        line_tuple = platform.return_hitbox()
+        for line in line_tuple:
+            if line.distance_to_ball(object.relative_pos) <= object.radius and line.within_points(object.relative_pos):
+                self.isColliding = True
+        self.isColliding = False
+
     # Check the type of the objects colliding
         # Then perform an action based on the type of collison happening
 
@@ -64,7 +73,7 @@ class Collision_Handler:
 
         # Check if AI
         if isinstance(self.obj_1,  Enemy): # Check if instance of AI
-            if isinstance(self.obj_2, Player):
+            if isinstance(self.obj_2, Enemy):
                 pass
             if isinstance(self.obj_2, Platform):
                 pass

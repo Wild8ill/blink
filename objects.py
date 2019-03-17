@@ -245,9 +245,18 @@ class Line: # a purely theoretical line class used to return the hitbox of platf
         self.pointA = pointA
         self.pointB = pointB
         self.thickness = 1
-        self.unit = (self.pB - self.pA).normalize()
-        self.normal = self.unit.copy().rotateAnti()
+        self.unit = (self.pointB - self.pointA).normalize()
+        self.normal = self.unit.copy().rotate_90()
 
     def draw(self, canvas): # for error testing allow the line to be drawn
-        canvas.draw_line(self.pA.getP(), self.pB.getP(), self.thickness, 'White')
+        canvas.draw_line(self.pointA.getP(), self.pointB.getP(), self.thickness, 'White')
+
+    def distance_to_object(self, pos): # distance from the point handed to the line. Maths covered in lectures
+        vector_to_a = pos - self.pointA
+        projection = vector_to_a.dot(self.normal) * self.normal
+        return projection.length()
+
+    def within_points(self, pos): # ensures that the object is hitting within the confines of the line
+        return ((pos - self.pointA).dot(self.unit) >= 0 and
+                (pos - self.pointB).dot(-self.unit) >= 0)
 

@@ -68,8 +68,7 @@ class MapConstructor:
         object_dict = {
             "#000000":Platform(),
             "#570000":FloatingPlatform(X,Y,16),
-            "#00e9e5":Player(Vector((X, Y)), Vector((0, 0)), 32, IMG, 9, 5, self.WIDTH, self.HEIGHT, self),
-            "#00e906":InvisibleWall(X,Y)
+            "#00e9e5":Player(Vector((X, Y)), Vector((0, 0)), 32, IMG, 9, 5, self.WIDTH, self.HEIGHT, self)
         }
         return object_dict.get(hexval)
 
