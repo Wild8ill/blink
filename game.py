@@ -62,14 +62,13 @@ class PlatformCollidable(Collidable):
     # Obj 2 = Platform = Rectangle 
     def update(self):
         # @TODO: Create logic for comparing objects to check collision that works
-        pass
-        # object = self.obj_1
-        # platform = self.obj_2
-        # line_tuple = platform.return_hitbox()
-        # for line in line_tuple:
-        #     if line.distance_to_ball(object.relative_pos) <= object.radius and line.within_points(object.relative_pos):
-        #         self.isColliding = True
-        # self.isColliding = False
+        object = self.obj_1
+        platform = self.obj_2
+        line_tuple = platform.return_hitbox()
+        for line in line_tuple:
+            if line.distance_to_ball(object.relative_pos) <= object.radius and line.within_points(object.relative_pos):
+                self.isColliding = True
+        self.isColliding = False
 
 
 class EntityCollidable(Collidable):  
@@ -77,13 +76,12 @@ class EntityCollidable(Collidable):
     # Obj 2 = Entity = Sphere
     def update(self):
         # @TODO: Create logic for comparing objects to check collision that works
-        pass
-    #    distance_vector = Vector((self.obj_2.pos)) - Vector((self.obj_1.pos))
-    #     distance = distance_vector.length()
-    #     if distance <= self.obj_1.radius + self.obj_2.radius:
-    #         if not self.isColliding:
-    #             self.isColliding = True
-    #     self.isColliding = False
+        distance_vector = Vector((self.obj_2.pos)) - Vector((self.obj_1.pos))
+        distance = distance_vector.length()
+        if distance <= self.obj_1.radius + self.obj_2.radius:
+            if not self.isColliding:
+                self.isColliding = True
+        self.isColliding = False
 
 #############################################################################################
 # Game Logic
