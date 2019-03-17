@@ -18,9 +18,10 @@ def return_level_file(level_id): # a dictionary wrapper to allow the generation 
         0:"welcome.png",
         1:"testmap.png",
         2:"level2.png",
-        3:"level3.png"
+        3:"level3.png",
+        4:"level4.png"
     }
-    return level_dict.get(level_id)
+    return "levels/%s"%level_dict.get(level_id)
 
 
 #############################################################################################
@@ -55,19 +56,21 @@ class Collidable:
         self.obj_2 = obj_2 
         # State of collision
         self.isColliding = False
-
+        
 class PlatformCollidable(Collidable):    
     # Obj 1 = Entity = Sphere
     # Obj 2 = Platform = Rectangle 
     def update(self):
         # @TODO: Create logic for comparing objects to check collision that works
         pass
-        # distance_vector = Vector((self.obj_2.pos)) - Vector((self.obj_1.pos))
-        # distance = distance_vector.length()
-        # if distance <= self.obj_1.radius + self.obj_2.radius:
-        #     if not self.isColliding:
+        # object = self.obj_1
+        # platform = self.obj_2
+        # line_tuple = platform.return_hitbox()
+        # for line in line_tuple:
+        #     if line.distance_to_ball(object.relative_pos) <= object.radius and line.within_points(object.relative_pos):
         #         self.isColliding = True
         # self.isColliding = False
+
 
 class EntityCollidable(Collidable):  
     # Obj 1 = Entity = Sphere
@@ -75,12 +78,12 @@ class EntityCollidable(Collidable):
     def update(self):
         # @TODO: Create logic for comparing objects to check collision that works
         pass
-        # distance_vector = Vector((self.obj_2.pos)) - Vector((self.obj_1.pos))
-        # distance = distance_vector.length()
-        # if distance <= self.obj_1.radius + self.obj_2.radius:
-        #     if not self.isColliding:
-        #         self.isColliding = True
-        # self.isColliding = False
+    #    distance_vector = Vector((self.obj_2.pos)) - Vector((self.obj_1.pos))
+    #     distance = distance_vector.length()
+    #     if distance <= self.obj_1.radius + self.obj_2.radius:
+    #         if not self.isColliding:
+    #             self.isColliding = True
+    #     self.isColliding = False
 
 #############################################################################################
 # Game Logic
@@ -93,7 +96,7 @@ class Game:
         self.score = 0
         # In PLAY 
         self.inPlay = False # Are we playing the game or at main menu
-        self.level = 1 # The Current Level
+        self.level = 4 # The Current Level
         # GAME ITEMS
         self.player = None  # will be overwritten
         self.camera = None # will also be overwritten
@@ -151,7 +154,7 @@ class Game:
     # Construct the current level
     def setup_level(self):
         global MAP_CONSTRUCTOR, map
-        map = MAP_CONSTRUCTOR.generate_map("levels/"+return_level_file(self.level)) # gets the map corresponding to the level of the game object.
+        map = MAP_CONSTRUCTOR.generate_map(return_level_file(self.level)) # gets the map corresponding to the level of the game object.
         for object in map:
             if isinstance(object, Player):
                 self.player = object
@@ -193,14 +196,13 @@ game.setup_level()
 frame = simplegui.create_frame('Blink', WIDTH, HEIGHT)
 frame.set_draw_handler(game.draw)
 
-# Event Handlong
+# Event Handling
 event = Events() # Event Handler Object
 timer = simplegui.create_timer(1, event.timer)
     # Register Key down and Key Up events of key press
 frame.set_keydown_handler(event.key_down) # On Key Down
 frame.set_keyup_handler(event.key_up) # On Key Up
 
-print("big yeet")
 # Event Handling
 timer.start()
 frame.start()

@@ -118,3 +118,6 @@ class Vector:
     # acos in the math library
     def angle(self, other):
         pass
+
+    def rotate_90(self):
+        return Vector(-self.y, self.x)

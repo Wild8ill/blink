@@ -20,17 +20,34 @@ class Platform:
         self.sprite = Sprite(IMG, 9, 6)
         self.pos = Vector((x,y))
         self.relative_pos = self.pos.copy()
+        self.block_width = 16
 
     def draw(self, canvas):
-        canvas.draw_line((0, self.y),
-                         (50000, self.y),
-                         self.border * 2 + 1,
-                         self.color) # each level is 1000 pixels long
-        self.sprite.draw(canvas, Vector((0,self.y)), (16,16),[0,4])
+        self.sprite.draw(canvas, self.relative_pos, (self.block_width, self.block_width), [0, 5])
 
-    def hit(self, obj):
-        h = (obj.offsetB() >= self.edgeR)
-        return h
+    def return_hitbox(self): # method to return 4 lines defining the outer bounds of the block
+        midpoint = self.relative_pos
+        half_width = self.block_width/2
+
+        # define edges
+        left = midpoint.x - half_width
+        right = midpoint.x + half_width
+        top = midpoint.y - half_width
+        bottom = midpoint.y + half_width
+
+        #define points
+        upper_left = Vector(left, top)
+        upper_right = Vector(right,top)
+        lower_left = Vector(left, bottom)
+        lower_right = Vector(right,bottom)
+
+        #define lines
+        left_edge = Line(lower_left,upper_left)
+        top_edge = Line(upper_left,upper_right)
+        right_edge = Line(upper_right,lower_right)
+        bottom_edge = Line(lower_right,lower_left)
+
+        return (left_edge,top_edge,right_edge,bottom_edge)
 
 class FloatingPlatform(Platform):
     def __init__(self, x, y=400, width=0):
@@ -39,12 +56,6 @@ class FloatingPlatform(Platform):
         self.width = width
         super().__init__(x,y)
 
-    def draw(self, canvas):
-        # canvas.draw_line((self.x, self.y),
-        #                  (self.x+self.width, self.y),
-        #                  self.border * 2 + 1,
-        #                  self.color)  # each level is 1000 pixels long
-        self.sprite.draw(canvas,self.relative_pos,(16,16),[0,5])
 
 #############################################################################################
 # Player
@@ -176,7 +187,7 @@ class Blip(Enemy):
         sprite_progression = [1,2,1,4]
 
 
-class Camera:
+class Camera: # the object that returns the locations of all the objects to be drawn to the screen, and handles vector transformations
     def __init__(self,width,height,player,map):
 
         #constants
@@ -185,11 +196,11 @@ class Camera:
         self.PLAYER = player
         self.X = 0
         self.Y = 1 # used to get values from the midpoint tuple
-        self.MAP = map
+        self.MAP = map # the map of all the objects in the level
 
         self.update()
 
-    def update(self):
+    def update(self): # update
         self.midpoint = self.PLAYER.pos.getP()
         self.left_edge = self.midpoint[self.X] - self.WIDTH/2
         self.right_edge = self.midpoint[self.X] + self.WIDTH/2
@@ -228,3 +239,24 @@ class Clock:
 
     def __str__(self):
         return str(self.__clock)
+
+class Line: # a purely theoretical line class used to return the hitbox of platforms
+    def __init__(self, pointA, pointB):
+        self.pointA = pointA
+        self.pointB = pointB
+        self.thickness = 1
+        self.unit = (self.pointB - self.pointA).normalize()
+        self.normal = self.unit.copy().rotate_90()
+
+    def draw(self, canvas): # for error testing allow the line to be drawn
+        canvas.draw_line(self.pointA.getP(), self.pointB.getP(), self.thickness, 'White')
+
+    def distance_to_object(self, pos): # distance from the point handed to the line. Maths covered in lectures
+        vector_to_a = pos - self.pointA
+        projection = vector_to_a.dot(self.normal) * self.normal
+        return projection.length()
+
+    def within_points(self, pos): # ensures that the object is hitting within the confines of the line
+        return ((pos - self.pointA).dot(self.unit) >= 0 and
+                (pos - self.pointB).dot(-self.unit) >= 0)
+
