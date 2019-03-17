@@ -71,7 +71,8 @@ class PlatformCollidable(Collidable):
             if line.distance_to_object(object.relative_pos) < object.radius and line.within_points(object.relative_pos):
                 if not self.isColliding:
                     print("hit or miss")
-                    object.vel = Vector((0,0))
+                    #object.vel = Vector((0,0))
+                    object.collide()
                      # TODO: ADD LOGIC FOR WHAT TO DO ON COLLISION
                     self.isColliding = True
             else:
@@ -102,7 +103,7 @@ class Game:
         self.score = 0
         # In PLAY 
         self.inPlay = False # Are we playing the game or at main menu
-        self.level = 3 # The Current Level
+        self.level = 5 # The Current Level
         # GAME ITEMS
         self.player = None  # will be overwritten
         self.camera = None # will also be overwritten
@@ -119,7 +120,9 @@ class Game:
         for object in self.camera.objects_to_render():
             if not isinstance(object, Player):
                 object.draw(canvas)
-
+                if not isinstance(object,Platform):
+                    print("FUCKING MOVE YOU BITCH")
+                    object.update()
         # Update the current level
         if self.player.update(clock) == "Next Level":
             self.level += 1 # Increase the level id of the game object

@@ -64,7 +64,11 @@ class FloatingPlatform(Platform):
 
 #############################################################################################
 # Player
-class Player:  # model the character as a ball for now convenient hitboxes
+class Entity: # base class that encompasses players and enemies
+    def collide(self):
+        pass
+
+class Player(Entity):  # model the character as a ball for now convenient hitboxes
     def __init__(self, pos=Vector((0, 0)), vel=Vector((0, 0)), radius=32, image=IMG, columns=1, row=1, width=0,
                  height=0, map=None):
         self.pos = pos
@@ -168,8 +172,9 @@ class Player:  # model the character as a ball for now convenient hitboxes
     def __setstate__(self, state):
         self.state = state
 
-    def collide(self, object):
-        self.collision.append(object)
+    def collide(self):
+        self.vel = Vector((0,0))
+        pass
 
     def check_collision(self):
         if len(self.collision) != 0:
@@ -179,20 +184,32 @@ class Player:  # model the character as a ball for now convenient hitboxes
                     self.pos.y = object.y - self.radius
 
 
-class Enemy:
-    def __init__(self, x, y, sprite_progression=1):
+class Enemy(Entity):
+    def __init__(self, x, y, sprite_progression=[0],radius=16):
         self.collision = []
         self.x = x
         self.y = y
+        self.radius = radius
+        self.pos = Vector((x,y))
+        self.relative_pos = self.pos
         self.sprite_progression = sprite_progression
+        self.sprite = Sprite(IMG, 9, 6)
 
+    def draw(self,canvas):
+        self.sprite.draw(canvas, self.relative_pos, (self.radius*2, self.radius*2), [0, 4])
 
 class Blip(Enemy):
-    def __init__(self, x, y, velocity, radius):
-        super().__init__(x, y, radius)
-        self.radius = radius
-        self.velocity = velocity
-        sprite_progression = [1, 2, 1, 4]
+    def __init__(self, x, y, velocity):
+        self.vel = Vector((0,velocity))
+        self.sprite_progression = [1, 2, 1, 4]
+        super().__init__(x, y, self.sprite_progression)
+
+    def update(self):
+        print("I am updating")
+        self.pos += self.vel
+
+    def collide(self):
+        self.vel.reflect(Vector((0,-1)))
 
 
 class Camera:  # the object that returns the locations of all the objects to be drawn to the screen, and handles vector transformations
