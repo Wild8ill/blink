@@ -18,9 +18,10 @@ def return_level_file(level_id): # a dictionary wrapper to allow the generation 
         0:"welcome.png",
         1:"testmap.png",
         2:"level2.png",
-        3:"level3.png"
+        3:"level3.png",
+        4:"level4.png"
     }
-    return level_dict.get(level_id)
+    return "levels/%s"%level_dict.get(level_id)
 
 
 #############################################################################################
@@ -86,7 +87,7 @@ class Game:
         self.score = 0
         # In PLAY 
         self.inPlay = False # Are we playing the game or at main menu
-        self.level = 1 # The Current Level
+        self.level = 4 # The Current Level
         # GAME ITEMS
         self.player = None  # will be overwritten
         self.camera = None # will also be overwritten
@@ -117,7 +118,7 @@ class Game:
     # Construct the current level
     def setup_level(self):
         global MAP_CONSTRUCTOR, map
-        map = MAP_CONSTRUCTOR.generate_map("levels/"+return_level_file(self.level)) # gets the map corresponding to the level of the game object.
+        map = MAP_CONSTRUCTOR.generate_map(return_level_file(self.level)) # gets the map corresponding to the level of the game object.
         for object in map:
             if isinstance(object, Player):
                 self.player = object
@@ -151,14 +152,13 @@ game.setup_level()
 frame = simplegui.create_frame('Blink', WIDTH, HEIGHT)
 frame.set_draw_handler(game.draw)
 
-# Event Handlong
+# Event Handling
 event = Events() # Event Handler Object
 timer = simplegui.create_timer(1, event.timer)
     # Register Key down and Key Up events of key press
 frame.set_keydown_handler(event.key_down) # On Key Down
 frame.set_keyup_handler(event.key_up) # On Key Up
 
-print("big yeet")
 # Event Handling
 timer.start()
 frame.start()
