@@ -62,13 +62,6 @@ class Collision_Handler:
             if isinstance(self.obj_2, Platform):
                 pass
 
-        # Check if Platform
-        if isinstance(self.obj_1, Platform): # Check if instance of Platform
-            if isinstance(self.obj_2, Player): # Check if instance of Player
-                pass
-            if isinstance(self.obj_2, Enemy): # Check if instance of AI
-                pass
-
         # Check if AI
         if isinstance(self.obj_1,  Enemy): # Check if instance of AI
             if isinstance(self.obj_2, Player):
