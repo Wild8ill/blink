@@ -39,7 +39,7 @@ class MapConstructor:
                 if hexval.lower() == "#00e9e5":
                     self.player_pos = (row,column)
                     self.PLAYER = self.object_type(hexval,(row,column))
-                    object_array.append(self.PLAYER)
+                    #object_array.append(self.PLAYER)
                     break # break for efficiency
 
         for column in range(map.size[0]): # yay we're iterating again this seems efficient

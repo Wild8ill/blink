@@ -19,7 +19,8 @@ def return_level_file(level_id): # a dictionary wrapper to allow the generation 
         1:"testmap.png",
         2:"level2.png",
         3:"level3.png",
-        4:"level4.png"
+        4:"level4.png",
+        5: "collision_test.png"
     }
     return "levels/%s"%level_dict.get(level_id)
 
@@ -43,6 +44,7 @@ class Interaction:
     def update(self):
         # Update all entity vs platform collisions
         for platformCollidable in self.platformCollisionArr:
+            print(platformCollidable.obj_1.pos,platformCollidable.obj_2.relative_pos)
             platformCollidable.update()
         # Update all entity vs entity collisions
         for entityCollidable in self.entityCollisionArr:
@@ -52,11 +54,11 @@ class Interaction:
 # Handles the collision between two objects
 class Collidable:
     def __init__(self, obj_1, obj_2):
-        self.obj_1 = obj_1 
-        self.obj_2 = obj_2 
+        self.obj_1 = obj_1
+        self.obj_2 = obj_2
         # State of collision
         self.isColliding = False
-        
+
 class PlatformCollidable(Collidable):    
     # Obj 1 = Entity = Sphere
     # Obj 2 = Platform = Rectangle 
@@ -66,12 +68,11 @@ class PlatformCollidable(Collidable):
         platform = self.obj_2
         line_tuple = platform.return_hitbox()
         for line in line_tuple:
-            if line.distance_to_object(object.pos) <= object.radius and line.within_points(object.pos):
+            if line.distance_to_object(object.relative_pos) < object.radius and line.within_points(object.relative_pos):
                 if not self.isColliding:
-                    print("IsColliding")
-
-                        # TODO: ADD LOGIC FOR WHAT TO DO ON COLLISION
-
+                    print("hit or miss")
+                    object.vel = Vector((0,0))
+                     # TODO: ADD LOGIC FOR WHAT TO DO ON COLLISION
                     self.isColliding = True
             else:
                 self.isColliding = False
@@ -85,7 +86,7 @@ class EntityCollidable(Collidable):
         distance = distance_vector.length()
         if distance <= self.obj_1.radius + self.obj_2.radius:
             if not self.isColliding:
-                print("IsColliding")
+                print("wrong collision")
                 self.isColliding = True
         else:
             self.isColliding = False
@@ -101,7 +102,7 @@ class Game:
         self.score = 0
         # In PLAY 
         self.inPlay = False # Are we playing the game or at main menu
-        self.level = 4 # The Current Level
+        self.level = 3 # The Current Level
         # GAME ITEMS
         self.player = None  # will be overwritten
         self.camera = None # will also be overwritten
