@@ -67,9 +67,14 @@ class PlatformCollidable(Collidable):
         line_tuple = platform.return_hitbox()
         for line in line_tuple:
             if line.distance_to_object(object.pos) <= object.radius and line.within_points(object.pos):
-                self.isColliding = True
-        self.isColliding = False
+                if not self.isColliding:
+                    print("IsColliding")
 
+                        # TODO: ADD LOGIC FOR WHAT TO DO ON COLLISION
+
+                    self.isColliding = True
+            else:
+                self.isColliding = False
 
 class EntityCollidable(Collidable):  
     # Obj 1 = Entity = Sphere
@@ -80,8 +85,10 @@ class EntityCollidable(Collidable):
         distance = distance_vector.length()
         if distance <= self.obj_1.radius + self.obj_2.radius:
             if not self.isColliding:
+                print("IsColliding")
                 self.isColliding = True
-        self.isColliding = False
+        else:
+            self.isColliding = False
 
 #############################################################################################
 # Game Logic
