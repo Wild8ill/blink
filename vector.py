@@ -120,4 +120,4 @@ class Vector:
         pass
 
     def rotate_90(self):
-        return Vector(-self.y, self.x)
+        return Vector((-self.y, self.x))

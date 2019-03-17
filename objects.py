@@ -36,10 +36,10 @@ class Platform:
         bottom = midpoint.y + half_width
 
         #define points
-        upper_left = Vector(left, top)
-        upper_right = Vector(right,top)
-        lower_left = Vector(left, bottom)
-        lower_right = Vector(right,bottom)
+        upper_left = Vector((left, top))
+        upper_right = Vector((right,top))
+        lower_left = Vector((left, bottom))
+        lower_right = Vector((right,bottom))
 
         #define lines
         left_edge = Line(lower_left,upper_left)

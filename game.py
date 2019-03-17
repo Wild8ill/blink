@@ -66,7 +66,7 @@ class PlatformCollidable(Collidable):
         platform = self.obj_2
         line_tuple = platform.return_hitbox()
         for line in line_tuple:
-            if line.distance_to_ball(object.relative_pos) <= object.radius and line.within_points(object.relative_pos):
+            if line.distance_to_object(object.pos) <= object.radius and line.within_points(object.pos):
                 self.isColliding = True
         self.isColliding = False
 
@@ -76,7 +76,7 @@ class EntityCollidable(Collidable):
     # Obj 2 = Entity = Sphere
     def update(self):
         # @TODO: Create logic for comparing objects to check collision that works
-        distance_vector = Vector((self.obj_2.pos)) - Vector((self.obj_1.pos))
+        distance_vector = Vector((self.obj_2.pos.getP())) - Vector((self.obj_1.pos.getP()))
         distance = distance_vector.length()
         if distance <= self.obj_1.radius + self.obj_2.radius:
             if not self.isColliding:
