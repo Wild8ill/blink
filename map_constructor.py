@@ -2,7 +2,8 @@
 
 from PIL import Image
 import sys
-from objects import *
+from platforms import *
+from entity import *
 from colormap import rgb2hex
 
 class MapConstructor:
