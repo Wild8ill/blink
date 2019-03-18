@@ -12,11 +12,11 @@ IMG = 'https://i.postimg.cc/7L7LYWTC/blink-sprites.png'
 
 #############################################################################################
 # Platform
-class Platform:
+class Block:
+    #wow generic class to contain all types of blocks
     def __init__(self, x=400, y=400):
         self.y = y
         self.border = 1
-        self.color = "red"
         self.normal = Vector((0, 1))
         self.edgeR = y + 1 + self.border
         self.sprite = Sprite(IMG, 9, 6)
@@ -24,6 +24,7 @@ class Platform:
         self.relative_pos = self.pos.copy()
         self.block_width = 16
 
+class Platform(Block):
     def draw(self, canvas):
         self.sprite.draw(canvas, self.relative_pos, (self.block_width, self.block_width), [0, 5])
         #for line in self.return_hitbox():
@@ -61,7 +62,8 @@ class FloatingPlatform(Platform):
         self.width = width
         super().__init__(x, y)
 
-
+class Spike(Block):
+    pass
 #############################################################################################
 # Player
 class Entity: # base class that encompasses players and enemies
@@ -128,12 +130,11 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
         self.check_collision()
 
     def draw(self, canvas):
-        '''canvas.draw_circle(self.pos.getP(),
+        canvas.draw_circle((self.WIDTH / 2, self.HEIGHT / 2),
                            self.radius,
                            1,
-                           self.color,
-                           self.color)
-        '''
+                           "blue",
+                           "blue")
         self.sprite.draw(canvas, Vector((self.WIDTH / 2, self.HEIGHT / 2)), (self.diameter, self.diameter))
 
     def add_move(self, key):
