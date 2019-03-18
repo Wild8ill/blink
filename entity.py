@@ -5,10 +5,13 @@ except ImportError:
 
 from vector import *
 from sprite import *
+from util import *
+from platforms import *
 from abc import ABC, abstractmethod
 
 IMG = 'https://i.postimg.cc/7L7LYWTC/blink-sprites.png'
 
+<<<<<<< HEAD:objects.py
 
 #############################################################################################
 # Platform
@@ -64,6 +67,8 @@ class FloatingPlatform(Platform):
 
 class Spike(Block):
     pass
+=======
+>>>>>>> 4-Documentation:entity.py
 #############################################################################################
 # Player
 class Entity: # base class that encompasses players and enemies
@@ -91,8 +96,8 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
         self.level_finished = False
         self.relative_pos = Vector((width/2,height/2))
 
-    def offsetB(self):
-        return self.pos.y + self.radius
+    # def offsetB(self):
+    #     return self.pos.y + self.radius
 
     def update(self, clock):
         if self.level_finished:
@@ -101,6 +106,9 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
         self.vel.subtract(Vector((0, -0.0981)))
         self.MAP.update_positions()  # calculates all relative positions for objects, now that player is set up properly
 
+
+        # State Checking
+            # What Sprite do we
         if self.state == "rest":
             self.sprite.set_frame([0, 0])
             for move in self.move_buffer:
@@ -136,6 +144,9 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
                            "blue",
                            "blue")
         self.sprite.draw(canvas, Vector((self.WIDTH / 2, self.HEIGHT / 2)), (self.diameter, self.diameter))
+
+##################################################################
+# Player Move Handling
 
     def add_move(self, key):
         self.move_buffer.append(key)
@@ -185,9 +196,11 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
                     self.pos.y = object.y - self.radius
 
 
+#################################################
+# ENEMY
+
 class Enemy(Entity):
     def __init__(self, x, y, sprite_progression=[0],radius=16):
-        self.collision = []
         self.x = x
         self.y = y
         self.radius = radius
@@ -213,77 +226,3 @@ class Blip(Enemy):
         self.vel.reflect(Vector((0,-1)))
 
 
-class Camera:  # the object that returns the locations of all the objects to be drawn to the screen, and handles vector transformations
-    def __init__(self, width, height, player, map):
-
-        # constants
-        self.WIDTH = width
-        self.HEIGHT = height
-        self.PLAYER = player
-        self.X = 0
-        self.Y = 1  # used to get values from the midpoint tuple
-        self.MAP = map  # the map of all the objects in the level
-
-        self.update()
-
-    def update(self):  # update
-        self.midpoint = self.PLAYER.pos.getP()
-        self.left_edge = self.midpoint[self.X] - self.WIDTH / 2
-        self.right_edge = self.midpoint[self.X] + self.WIDTH / 2
-        self.top_edge = self.midpoint[self.Y] - self.WIDTH / 2
-        self.bottom_edge = self.midpoint[self.Y] + self.WIDTH / 2
-
-    def objects_to_render(self):
-        temp_objects = [self.PLAYER]
-        for object in self.MAP:
-            if self.within_bounds(object.pos.getP()):
-                temp_objects.append(object)
-        return temp_objects
-
-    def within_bounds(self, position):
-        x = position[self.X]
-        y = position[self.Y]
-        if x <= self.right_edge + 16 and x >= self.left_edge - 16:  # checks x coordinate against the edges. Added a tolerance for smoothness
-            if y >= self.top_edge - 16 and y <= self.bottom_edge + 16:  # checks y, note y increases downwards
-                return True
-        return False
-
-    def __str__(self):
-        return str(self.midpoint)
-
-
-class Clock:
-    def __init__(self):
-        self.__clock = 0
-
-    def increment_clock(self):
-        self.__clock += 1
-
-    def return_mod(self, mod):
-        if self.__clock % mod == 0:
-            return True
-        return False
-
-    def __str__(self):
-        return str(self.__clock)
-
-
-class Line:  # a purely theoretical line class used to return the hitbox of platforms
-    def __init__(self, pointA, pointB):
-        self.pointA = pointA
-        self.pointB = pointB
-        self.thickness = 1
-        self.unit = (self.pointB - self.pointA).normalize()
-        self.normal = self.unit.copy().rotate_90()
-
-    def draw(self, canvas):  # for error testing allow the line to be drawn
-        canvas.draw_line(self.pointA.getP(), self.pointB.getP(), self.thickness, 'White')
-
-    def distance_to_object(self, pos):  # distance from the point handed to the line. Maths covered in lectures
-        vector_to_a = pos - self.pointA
-        projection = vector_to_a.dot(self.normal) * self.normal
-        return projection.length()
-
-    def within_points(self, pos):  # ensures that the object is hitting within the confines of the line
-        return ((pos - self.pointA).dot(self.unit) >= 0 and
-                (pos - self.pointB).dot(-self.unit) >= 0)

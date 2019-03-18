@@ -6,6 +6,9 @@ except ImportError:
 from vector import *
 from sprite import *
 from map_constructor import *
+from platforms import *
+from entity import *
+from util import *
 
 WIDTH = 800
 HEIGHT = 450
