@@ -4,11 +4,9 @@ except ImportError:
     import SimpleGUICS2Pygame.simpleguics2pygame as simplegui
 
 from vector import *
-from sprite import *
+from sprite_sheet import *
 from util import *
 from abc import ABC, abstractmethod
-
-IMG = 'https://i.postimg.cc/7L7LYWTC/blink-sprites.png'
 
 #############################################################################################
 # Platform
@@ -18,13 +16,13 @@ class Platform:
         self.x = x
         self.border = 1
         self.color = "red"
-        self.sprite = Sprite(IMG, 9, 6)
+        self.sprite = Sprite_Sheet()
         self.pos = Vector((x, y))
         self.relative_pos = self.pos.copy()
         self.block_width = 16
 
     def draw(self, canvas):
-        self.sprite.draw(canvas, self.relative_pos, (self.block_width, self.block_width), [0, 5])
+        self.sprite.draw(canvas, self.relative_pos, (self.block_width, self.block_width), [4, 5])
         #for line in self.return_hitbox():
         #    line.draw(canvas)
 

@@ -120,7 +120,7 @@ class Game:
         for object in self.camera.objects_to_render():
             if not isinstance(object, Player):
                 object.draw(canvas)
-                if not isinstance(object,Platform):
+                if isinstance(object,Enemy):
                     object.update()
         # Update the current level
         if self.player.update(clock) == "Next Level":

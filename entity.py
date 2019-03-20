@@ -80,11 +80,11 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
         self.check_collision()
 
     def draw(self, canvas):
-        canvas.draw_circle((self.WIDTH / 2, self.HEIGHT / 2),
-                           self.radius,
-                           1,
-                           "blue",
-                           "blue")
+        # canvas.draw_circle((self.WIDTH / 2, self.HEIGHT / 2),
+        #                    self.radius,
+        #                    1,
+        #                    "blue",
+        #                    "blue")
         self.sprite.draw(canvas, Vector((self.WIDTH / 2, self.HEIGHT / 2)), (self.diameter, self.diameter))
 
 ##################################################################
