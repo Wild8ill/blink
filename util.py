@@ -141,7 +141,7 @@ class Parallax:
         self.right_edge = self.pos.getP()[0] + self.WIDTH / 2
         self.left_neighbour = False
         self.right_neighbour = False
-        self.IMG = "https://i.postimg.cc/6qzLMjBr/parallax.png"
+        self.IMG = "https://i.postimg.cc/0N6RK0Fj/parallax.png"
         self.sprite = Sprite(self.IMG, 1, 3)
 
 
