@@ -18,7 +18,8 @@ clock = Clock()
 
 def return_level_file(level_id): # a dictionary wrapper to allow the generation and passing of levels automatically
     level_dict = {
-        0:"welcome.png",
+        -1:"gameover.png",
+        0:"start.png",
         1:"testmap.png",
         2:"level2.png",
         3:"level3.png",
@@ -103,7 +104,7 @@ class Game:
         self.score = 0
         # In PLAY 
         self.inPlay = False # Are we playing the game or at main menu
-        self.level = 3 # The Current Level
+        self.level = -1 #The Current Level
         # GAME ITEMS
         self.player = None  # will be overwritten
         self.camera = None # will also be overwritten
@@ -117,7 +118,14 @@ class Game:
     # Handles the drawing of the game
     def draw(self, canvas):
         # Only draw objects that are in the cameras view
+
+        draw_over_player = [] #used for static screens
         for object in self.camera.objects_to_render():
+
+            if isinstance(object, StaticScreen):
+                draw_over_player.append(object)
+                break
+
             if not isinstance(object, Player):
                 object.draw(canvas)
                 if isinstance(object,Enemy):
@@ -129,6 +137,11 @@ class Game:
         
         # Draw the player
         self.player.draw(canvas)
+
+        for screen in draw_over_player:
+            screen.draw(canvas)
+
+            
         MAP_CONSTRUCTOR.PLAYER = self.player # make player current so vector transform is updated
         self.update() # Update Game Logic
 

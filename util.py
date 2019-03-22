@@ -174,3 +174,22 @@ class Foreground(Parallax):
         super().__init__(pos)
         self.scroll_speed /= 0.3
         self.sprite.set_frame([0,2])
+
+class StaticScreen:
+    def __init__(self,x,y,width,height):
+        self.pos = Vector((x,y))
+        self.WIDTH = width
+        self.HEIGHT = height
+
+    def draw(self, canvas):
+        self.sprite.draw(canvas, Vector((self.WIDTH/2, self.HEIGHT/2)), (self.WIDTH,self.HEIGHT))
+
+class HomeScreen(StaticScreen):
+    def __init__(self,x,y,width,height):
+        super().__init__(x,y,width,height)
+        self.sprite = Sprite("https://i.postimg.cc/hjcCdwfq/home-screen.png",1,1)
+
+class GameOverScreen(StaticScreen):
+    def __init__(self,x,y,width,height):
+        super().__init__(x,y,width,height)
+        self.sprite = Sprite("https://i.postimg.cc/cLhcLWnf/game-over.png",1,1)
