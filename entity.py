@@ -176,7 +176,6 @@ class Blip(Enemy):
         super().__init__(x, y, self.sprite_progression)
 
     def update(self):
-        print("I am updating")
         self.pos += self.vel
 
     def collide(self):

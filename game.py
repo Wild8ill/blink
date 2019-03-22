@@ -155,12 +155,14 @@ class Game:
 
     # Update the current level then run the setup for it
         ## Added so we can force level skipping to test
-    def set_level(self, level):
+    def set_level(self, level): 
         self.level = level
         self.setup_level()
 
     # Construct the current level
     def setup_level(self):
+        self.platformArr = []
+        self.entityArr = []
         global MAP_CONSTRUCTOR, map
         map = MAP_CONSTRUCTOR.generate_map(return_level_file(self.level)) # gets the map corresponding to the level of the game object.
         
