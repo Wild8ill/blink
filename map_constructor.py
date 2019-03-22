@@ -59,16 +59,16 @@ class MapConstructor:
 
 
     def object_type(self, hexval,*arg):
-        X = self.WIDTH/2 + arg[0][0] * 16
-        Y = self.HEIGHT/2 + arg[0][1] * 16
         X = arg[0][0] * 16
         Y = arg[0][1] * 16
+        X = arg[0][0] * 32
+        Y = arg[0][1] * 32
 
         hexval = hexval.lower()
         # a 32 pixel wide sprite should be 16 pixels across
         object_dict = {
             "#000000":Platform(),
-            "#570000":FloatingPlatform(X,Y,16),
+            "#570000":FloatingPlatform(X,Y,32),
             "#00e9e5":Player(Vector((X, Y)), Vector((0, 0)), 32, IMG, 9, 5, self.WIDTH, self.HEIGHT, self),
             "#002657":Blip(X,Y,1),
             "#2d0b0b":GameOverScreen(X,Y,self.WIDTH,self.HEIGHT),

@@ -104,7 +104,7 @@ class Game:
         self.score = 0
         # In PLAY 
         self.inPlay = False # Are we playing the game or at main menu
-        self.level = -1 #The Current Level
+        self.level = 0 #The Current Level
         # GAME ITEMS
         self.player = None  # will be overwritten
         self.camera = None # will also be overwritten
@@ -208,6 +208,10 @@ class Events:
         game.player.add_move(key)
 
     def key_up(self, key):
+        if key == simplegui.KEY_MAP["space"] and (game.level == -1 or game.level == 0):
+            game.level += 1
+            game.setup_level()
+
         game.player.remove_move(key)
 
     def timer(self):
