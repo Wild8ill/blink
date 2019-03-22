@@ -141,7 +141,7 @@ class Game:
         for screen in draw_over_player:
             screen.draw(canvas)
 
-            
+
         MAP_CONSTRUCTOR.PLAYER = self.player # make player current so vector transform is updated
         self.update() # Update Game Logic
 

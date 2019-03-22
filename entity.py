@@ -126,7 +126,7 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
             self.level_finished = True
 
     def move_left(self, speed):
-        if self.vel.x < self.terminal_vel:
+        if math.fabs(self.vel.x) < self.terminal_vel:
             self.vel.add(Vector((-speed, 0)))
 
     def move_right(self, speed):
