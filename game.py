@@ -145,13 +145,13 @@ class Game:
         for entity in self.entityArr:
             for platform in self.platformArr:
                 self.interaction.addPlatformCollidable(entity, platform)
-
         # Every Entity vs Entity
         for entityOne in self.entityArr:
             for entityTwo in self.entityArr:
                 if entityOne is not entityTwo:
                     self.interaction.addEntityCollidable(entityOne, entityTwo)
-
+        print(len(self.platformArr))
+        print(len(self.entityArr))
 
     # Update the current level then run the setup for it
         ## Added so we can force level skipping to test
@@ -163,15 +163,23 @@ class Game:
     def setup_level(self):
         global MAP_CONSTRUCTOR, map
         map = MAP_CONSTRUCTOR.generate_map(return_level_file(self.level)) # gets the map corresponding to the level of the game object.
-        for object in map:
+        
+        # Create camera object
+        # Go through items of map until find the player object
+        for object in map:    
             if isinstance(object, Player):
                 self.player = object
                 self.camera = Camera(WIDTH,HEIGHT, self.player, map)
                 self.entityArr.insert(0, object) # Adds player to the first position of the Entity Array
-            elif isinstance(object, Enemy):
+
+        # Go through all objects rendered by the camera
+        for object in self.camera.objects_to_render():
+            if isinstance(object, Enemy):
                 self.entityArr.append(object) # Adds Enemies to the Entity Array
-            else:
+            elif isinstance(object, Platform):
                 self.platformArr.append(object) # Adds platforms to Platform Array
+            else:
+                pass
         self.model_interactions() # Models the interactions between every Platform and Entity
 
 
