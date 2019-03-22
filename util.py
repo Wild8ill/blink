@@ -132,16 +132,19 @@ class Line:  # a purely theoretical line class used to return the hitbox of plat
                 (pos - self.pointB).dot(-self.unit) >= 0)
 
 class Parallax:
-    def __init__(self, pos):
+    def __init__(self, pos, state="day"):
         self.pos = pos
         self.scroll_speed = 1
         self.WIDTH = 2000
-        self.HEIGHT = 1000
+        self.HEIGHT = 450
         self.left_edge = self.pos.getP()[0] - self.WIDTH / 2
         self.right_edge = self.pos.getP()[0] + self.WIDTH / 2
         self.left_neighbour = False
         self.right_neighbour = False
-        self.IMG = "https://i.postimg.cc/0N6RK0Fj/parallax.png"
+        if state == "day":
+            self.IMG = "https://i.postimg.cc/0N6RK0Fj/parallax.png"
+        elif state == "night":
+            self.IMG = "https://i.postimg.cc/WpmHVx2V/parallax-night.png"
         self.sprite = Sprite(self.IMG, 1, 3)
 
 
@@ -175,13 +178,22 @@ class Foreground(Parallax):
         self.scroll_speed /= 0.4
         self.sprite.set_frame([0,2])
 
-class HomeScreen:
-    def __init__(self,x,y,width,height):
-        self.pos = Vector((x,y))
-        self.WIDTH = width
-        self.HEIGHT = height
-        self.sprite = Sprite("https://i.postimg.cc/hjcCdwfq/home-screen.png",1,1)
+class StaticScreen:
+    def __init__(self, x, y, width, height):
+            self.pos = Vector((x, y))
+            self.WIDTH = width
+            self.HEIGHT = height
 
     def draw(self, canvas):
         self.sprite.draw(canvas, Vector((self.WIDTH/2, self.HEIGHT/2)), (self.WIDTH,self.HEIGHT))
+
+class HomeScreen(StaticScreen):
+    def __init__(self,x,y,width,height):
+        super().__init__(x,y,width,height)
+        self.sprite = Sprite("https://i.postimg.cc/hjcCdwfq/home-screen.png",1,1)
+
+class GameOverScreen(StaticScreen):
+    def __init__(self,x,y,width,height):
+        super().__init__(x, y, width, height)
+        self.sprite = Sprite("https://i.postimg.cc/cLhcLWnf/game-over.png",1,1)
 

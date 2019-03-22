@@ -67,6 +67,8 @@ class MapConstructor:
         Y = self.HEIGHT/2 + arg[0][1] * 16
         X = arg[0][0] * 16
         Y = arg[0][1] * 16
+        X = arg[0][0] * 32
+        Y = arg[0][1] * 32
 
         hexval = hexval.lower()
         # a 32 pixel wide sprite should be 16 pixels across
@@ -76,7 +78,8 @@ class MapConstructor:
             "#00e9e5":Player(Vector((X, Y)), Vector((0, 0)), 32, IMG, 9, 5, self.WIDTH, self.HEIGHT, self),
             "#002657":Blip(X,Y,1),
             "#fff100": Heart(X, Y),
-            "#aedecb":HomeScreen(X, Y,self.WIDTH,self.HEIGHT)
+            "#aedecb":HomeScreen(X, Y,self.WIDTH,self.HEIGHT),
+            "#bb0000":GameOverScreen(X,Y,self.WIDTH,self.HEIGHT)
         }
         return object_dict.get(hexval)
 

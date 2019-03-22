@@ -19,12 +19,12 @@ class Platform:
         self.sprite = Sprite_Sheet()
         self.pos = Vector((x, y))
         self.relative_pos = self.pos.copy()
-        self.block_width = 16
+        self.block_width = 32
 
     def draw(self, canvas):
         self.sprite.draw(canvas, self.relative_pos, (self.block_width, self.block_width), [4, 5])
-        #for line in self.return_hitbox():
-        #    line.draw(canvas)
+        for line in self.return_hitbox():
+            line.draw(canvas)
 
     def return_hitbox(self):  # method to return 4 lines defining the outer bounds of the block
         midpoint = self.relative_pos

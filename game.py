@@ -18,6 +18,7 @@ clock = Clock()
 
 def return_level_file(level_id): # a dictionary wrapper to allow the generation and passing of levels automatically
     level_dict = {
+        -1:"game_over.png",
         0:"welcome.png",
         1:"testmap.png",
         2:"level2.png",
@@ -103,7 +104,7 @@ class Game:
         self.score = 0
         # In PLAY 
         self.inPlay = False # Are we playing the game or at main menu
-        self.level = 0 # The Current Level
+        self.level = -1 # The Current Level
         # GAME ITEMS
         self.player = None  # will be overwritten
         self.camera = None # will also be overwritten
@@ -121,7 +122,7 @@ class Game:
         draw_above_player = [] # for exceptional things to be drawn over player
 
         for object in self.camera.objects_to_render():
-            if isinstance(object, HomeScreen):
+            if isinstance(object, StaticScreen):
                 draw_above_player.append(object)
                 break
             if not isinstance(object, Player):
@@ -162,6 +163,8 @@ class Game:
             for entityTwo in self.entityArr:
                 if entityOne is not entityTwo:
                     self.interaction.addEntityCollidable(entityOne, entityTwo)
+
+        print((len(self.platformArr)))
 
 
     # Update the current level then run the setup for it
