@@ -77,7 +77,7 @@ class MapConstructor:
             "#002657":Blip(X,Y,1),
             "#fff100": Heart(X, Y),
             "#2d0b0b":GameOverScreen(X,Y,self.WIDTH,self.HEIGHT),
-            "#132d0b":HomeScreen(X, Y, self.WIDTH, self.HEIGHT),
+            "#aedecb":HomeScreen(X, Y, self.WIDTH, self.HEIGHT),
         }
         return object_dict.get(hexval)
 

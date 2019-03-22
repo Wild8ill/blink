@@ -19,7 +19,7 @@ clock = Clock()
 def return_level_file(level_id): # a dictionary wrapper to allow the generation and passing of levels automatically
     level_dict = {
         -1:"gameover.png",
-        0:"start.png",
+        0:"welcome.png",
         1:"testmap.png",
         2:"level2.png",
         3:"level3.png",
@@ -104,7 +104,7 @@ class Game:
         self.score = 0
         # In PLAY 
         self.inPlay = False # Are we playing the game or at main menu
-        self.level = -1 # The Current Level
+        self.level = 0# The Current Level
         # GAME ITEMS
         self.player = None  # will be overwritten
         self.camera = None # will also be overwritten
