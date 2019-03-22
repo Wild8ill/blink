@@ -18,8 +18,8 @@ clock = Clock()
 
 def return_level_file(level_id): # a dictionary wrapper to allow the generation and passing of levels automatically
     level_dict = {
-        -1:"game_over.png",
-        0:"welcome.png",
+        -1:"gameover.png",
+        0:"start.png",
         1:"testmap.png",
         2:"level2.png",
         3:"level3.png",
@@ -125,6 +125,13 @@ class Game:
             if isinstance(object, StaticScreen):
                 draw_above_player.append(object)
                 break
+        draw_over_player = [] #used for static screens
+        for object in self.camera.objects_to_render():
+
+            if isinstance(object, StaticScreen):
+                draw_over_player.append(object)
+                break
+
             if not isinstance(object, Player):
                 object.draw(canvas)
                 if isinstance(object,Enemy):
@@ -157,35 +164,42 @@ class Game:
         for entity in self.entityArr:
             for platform in self.platformArr:
                 self.interaction.addPlatformCollidable(entity, platform)
-
         # Every Entity vs Entity
         for entityOne in self.entityArr:
             for entityTwo in self.entityArr:
                 if entityOne is not entityTwo:
                     self.interaction.addEntityCollidable(entityOne, entityTwo)
 
-        print((len(self.platformArr)))
-
-
     # Update the current level then run the setup for it
         ## Added so we can force level skipping to test
-    def set_level(self, level):
+    def set_level(self, level): 
         self.level = level
         self.setup_level()
 
     # Construct the current level
     def setup_level(self):
+        self.platformArr = []
+        self.entityArr = []
         global MAP_CONSTRUCTOR, map
         map = MAP_CONSTRUCTOR.generate_map(return_level_file(self.level)) # gets the map corresponding to the level of the game object.
-        for object in map:
+        
+        # Create camera object
+        # Go through items of map until find the player object
+        for object in map:    
             if isinstance(object, Player):
                 self.player = object
                 self.camera = Camera(WIDTH,HEIGHT, self.player, map)
                 self.entityArr.insert(0, object) # Adds player to the first position of the Entity Array
-            elif isinstance(object, Enemy):
+
+        # Go through all objects rendered by the camera
+        for object in self.camera.objects_to_render():
+            if isinstance(object, Enemy):
                 self.entityArr.append(object) # Adds Enemies to the Entity Array
             elif isinstance(object,Platform):
+
                 self.platformArr.append(object) # Adds platforms to Platform Array
+            else:
+                pass
         self.model_interactions() # Models the interactions between every Platform and Entity
 
 
@@ -199,6 +213,10 @@ class Events:
         game.player.add_move(key)
 
     def key_up(self, key):
+        if key == simplegui.KEY_MAP["space"] and (game.level == -1 or game.level == 0):
+            game.level += 1
+            game.setup_level()
+
         game.player.remove_move(key)
 
     def timer(self):

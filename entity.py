@@ -44,10 +44,23 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
     def update(self, clock):
         if self.level_finished:
             return "Next Level"
-        self.pos.add(self.vel)
-        self.vel.subtract(Vector((0, -0.0981)))
-        self.MAP.update_positions()  # calculates all relative positions for objects, now that player is set up properly
 
+        self.pos.add(self.vel)
+
+        # Removing X Velocity over time 
+            # Removes 1/2 each loop 
+            # When at less than 0.1 set to 0
+        if (self.vel.x > 0):
+            if(self.vel.x < 0.1):
+                self.vel.subtract(Vector((self.vel.x, 0)))
+            else: 
+                tmpx = self.vel.x / 2
+                self.vel.subtract(Vector((tmpx, 0)))
+
+        # Adds some "Gravity"
+        self.vel.subtract(Vector((0, -0.0981)))
+
+        self.MAP.update_positions()  # calculates all relative positions for objects, now that player is set up properly
 
         # State Checking
             # What Sprite do we
@@ -113,11 +126,11 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
             self.level_finished = True
 
     def move_left(self, speed):
-        if self.vel.x < self.terminal_vel:
+        if math.fabs(self.vel.x) < self.terminal_vel:
             self.vel.add(Vector((-speed, 0)))
 
     def move_right(self, speed):
-        if self.vel.x < self.terminal_vel:
+        if math.fabs(self.vel.x) < self.terminal_vel:
             self.vel.add(Vector((speed, 0)))
 
     def jump(self, type="single"):
@@ -127,7 +140,9 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
         self.state = state
 
     def collide(self):
+        # self.vel.reflect(Vector((0,-1)))
         self.vel = Vector((0,0))
+        self.pos.y -= 0.1
         pass
 
     def check_collision(self):
@@ -162,7 +177,6 @@ class Blip(Enemy):
         super().__init__(x, y, self.sprite_progression)
 
     def update(self):
-
         self.pos += self.vel
 
     def collide(self):
