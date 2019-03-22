@@ -6,29 +6,28 @@ except ImportError:
 from vector import *
 from sprite_sheet import *
 from util import *
-from abc import ABC, abstractmethod
 
-#############################################################################################
-# Platform
-class Platform:
-    def __init__(self, x=400, y=400):
-        self.y = y
+class Item:
+    def __init__(self, x, y, sprite_progression=[0],radius=16):
         self.x = x
-        self.border = 1
-        self.color = "red"
+        self.y = y
+        self.radius = radius
+        self.pos = Vector((x,y))
+        self.relative_pos = self.pos
+        self.sprite_progression = sprite_progression
+        #self.sprite = Sprite(IMG, 9, 6)
         self.sprite = Sprite_Sheet()
-        self.pos = Vector((x, y))
-        self.relative_pos = self.pos.copy()
-        self.block_width = 16
+        self.current_sprite = 0
 
-    def draw(self, canvas):
-        self.sprite.draw(canvas, self.relative_pos, (self.block_width, self.block_width), [4, 5])
-        #for line in self.return_hitbox():
-        #    line.draw(canvas)
+    def draw(self,canvas):
+        #self.sprite.draw(canvas, self.relative_pos, (self.radius*2, self.radius*2), [self.sprite_progression[self.current_sprite], self.sprite.frame_index[1]])
+        self.sprite.draw(canvas, self.relative_pos, (self.radius*2, self.radius*2), [0,7])
+        self.current_sprite %= len(self.sprite_progression)
+        self.current_sprite += 1
 
     def return_hitbox(self):  # method to return 4 lines defining the outer bounds of the block
         midpoint = self.relative_pos
-        half_width = self.block_width / 2
+        half_width = self.radius
 
         # define edges
         left = midpoint.x - half_width
@@ -50,17 +49,10 @@ class Platform:
 
         return (left_edge, top_edge, right_edge, bottom_edge)
 
-class FloatingPlatform(Platform):
-    def __init__(self, x, y=400, width=0):
-        self.y = y
-        self.x = x
-        self.width = width
-        super().__init__(x, y)
 
-class Underblock(FloatingPlatform):
-    def __init__(self, x, y=400, width=0):
-        self.y = y
-        self.x = x
-        self.width = width
-        super().__init__(x, y)
-        self.sprite.set
+class Heart(Item):
+    def __init__(self,x,y):
+        self.sprite_progression = [0,1,2,3,4,5,6]
+        super().__init__(x,y, self.sprite_progression)
+        self.value = 0.5
+        self.sprite = Sprite_Sheet()

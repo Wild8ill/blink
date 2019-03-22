@@ -19,6 +19,9 @@ class Sprite:
         if self.frame_index[0] == 0:
             self.frame_index[1] = (self.frame_index[1] + 1) % self.rows
 
+    def go_back_frame(self):
+        pass
+
     def set_frame(self, list):
         self.frame_index = list
 

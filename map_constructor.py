@@ -3,6 +3,7 @@
 from PIL import Image
 import sys
 from platforms import *
+from items import *
 from entity import *
 from colormap import rgb2hex
 
@@ -22,6 +23,9 @@ class MapConstructor:
 
 
     def generate_map(self, filename):
+        if filename == "levels/welcome_screen":
+            return [HomeScreen(self.WIDTH/2, self.HEIGHT/2)]
+
         object_array = []
         try:
             map = Image.open(filename)
@@ -70,7 +74,9 @@ class MapConstructor:
             "#000000":Platform(),
             "#570000":FloatingPlatform(X,Y,16),
             "#00e9e5":Player(Vector((X, Y)), Vector((0, 0)), 32, IMG, 9, 5, self.WIDTH, self.HEIGHT, self),
-            "#002657":Blip(X,Y,1)
+            "#002657":Blip(X,Y,1),
+            "#fff100": Heart(X, Y),
+            "#aedecb":HomeScreen(X, Y,self.WIDTH,self.HEIGHT)
         }
         return object_dict.get(hexval)
 

@@ -1,12 +1,8 @@
 from sprite import *
 
-class Sprite_Sheet:
+class Sprite_Sheet(Sprite):
     def __init__(self):
-        self.IMG = 'https://i.postimg.cc/pVBZVTKm/blink-sprites.png'
+        self.IMG = 'https://i.postimg.cc/6qJ25Kz6/blink-sprites.png'
         self.columns = 9
-        self.rows = 7
-        self.sprite = Sprite(self.IMG, self.columns , self.rows)
-
-    def draw(self,canvas, position, dimensions, frame_index):
-        self.sprite.draw(canvas, position, dimensions, frame_index)
-
+        self.rows = 9
+        super().__init__(self.IMG, self.columns , self.rows)

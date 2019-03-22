@@ -149,7 +149,8 @@ class Enemy(Entity):
         self.pos = Vector((x,y))
         self.relative_pos = self.pos
         self.sprite_progression = sprite_progression
-        self.sprite = Sprite(IMG, 9, 6)
+        #self.sprite = Sprite(IMG, 9, 6)
+        self.sprite = Sprite_Sheet()
 
     def draw(self,canvas):
         self.sprite.draw(canvas, self.relative_pos, (self.radius*2, self.radius*2), [0, 4])

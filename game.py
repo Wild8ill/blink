@@ -103,7 +103,7 @@ class Game:
         self.score = 0
         # In PLAY 
         self.inPlay = False # Are we playing the game or at main menu
-        self.level = 3 # The Current Level
+        self.level = 0 # The Current Level
         # GAME ITEMS
         self.player = None  # will be overwritten
         self.camera = None # will also be overwritten
@@ -117,11 +117,18 @@ class Game:
     # Handles the drawing of the game
     def draw(self, canvas):
         # Only draw objects that are in the cameras view
+
+        draw_above_player = [] # for exceptional things to be drawn over player
+
         for object in self.camera.objects_to_render():
+            if isinstance(object, HomeScreen):
+                draw_above_player.append(object)
+                break
             if not isinstance(object, Player):
                 object.draw(canvas)
                 if isinstance(object,Enemy):
                     object.update()
+
         # Update the current level
         if self.player.update(clock) == "Next Level":
             self.level += 1 # Increase the level id of the game object
@@ -129,6 +136,10 @@ class Game:
         
         # Draw the player
         self.player.draw(canvas)
+
+        for object in draw_above_player:
+            object.draw(canvas)
+
         MAP_CONSTRUCTOR.PLAYER = self.player # make player current so vector transform is updated
         self.update() # Update Game Logic
 
@@ -170,7 +181,7 @@ class Game:
                 self.entityArr.insert(0, object) # Adds player to the first position of the Entity Array
             elif isinstance(object, Enemy):
                 self.entityArr.append(object) # Adds Enemies to the Entity Array
-            else:
+            elif isinstance(object,Platform):
                 self.platformArr.append(object) # Adds platforms to Platform Array
         self.model_interactions() # Models the interactions between every Platform and Entity
 

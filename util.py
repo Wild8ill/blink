@@ -166,11 +166,22 @@ class Background(Parallax):
 class Midground(Parallax):
     def __init__(self, pos):
         super().__init__(pos)
-        self.scroll_speed /= 0.6
+        self.scroll_speed /= 0.8
         self.sprite.set_frame([0,1])
 
 class Foreground(Parallax):
     def __init__(self, pos):
         super().__init__(pos)
-        self.scroll_speed /= 0.3
+        self.scroll_speed /= 0.4
         self.sprite.set_frame([0,2])
+
+class HomeScreen:
+    def __init__(self,x,y,width,height):
+        self.pos = Vector((x,y))
+        self.WIDTH = width
+        self.HEIGHT = height
+        self.sprite = Sprite("https://i.postimg.cc/hjcCdwfq/home-screen.png",1,1)
+
+    def draw(self, canvas):
+        self.sprite.draw(canvas, Vector((self.WIDTH/2, self.HEIGHT/2)), (self.WIDTH,self.HEIGHT))
+
