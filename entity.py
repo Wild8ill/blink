@@ -90,7 +90,6 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
 
         elif self.state == "blink":
             if self.clock.return_mod(10):
-                print("change")
                 self.sprite.step_frame()
                 self.animation_frame += 1
             if self.animation_frame == 8:

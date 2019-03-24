@@ -20,10 +20,7 @@ class Item:
         self.current_sprite = 0
 
     def draw(self,canvas):
-        #self.sprite.draw(canvas, self.relative_pos, (self.radius*2, self.radius*2), [self.sprite_progression[self.current_sprite], self.sprite.frame_index[1]])
-        self.sprite.draw(canvas, self.relative_pos, (self.radius*2, self.radius*2), [0,7])
-        self.current_sprite %= len(self.sprite_progression)
-        self.current_sprite += 1
+        self.sprite.draw(canvas, self.relative_pos, (self.radius*2, self.radius*2))
 
     def return_hitbox(self):  # method to return 4 lines defining the outer bounds of the block
         midpoint = self.relative_pos
@@ -55,4 +52,14 @@ class Heart(Item):
         self.sprite_progression = [0,1,2,3,4,5,6]
         super().__init__(x,y, self.sprite_progression)
         self.value = 0.5
-        self.sprite = Sprite_Sheet()
+        self.sprite = Sprite_Sheet([0,8])
+        self.internal_clock = Clock()
+
+    def draw(self,canvas):
+        self.internal_clock.increment_clock()
+        if self.internal_clock.return_mod(3):
+            if self.sprite.frame_index == [5, 8]:
+                self.sprite.set_frame([0, 8])
+            else:
+                self.sprite.step_frame()
+        super().draw(canvas)
