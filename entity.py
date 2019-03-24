@@ -8,12 +8,27 @@ from sprite import *
 from util import *
 from platforms import *
 from abc import ABC, abstractmethod
+from sprite_sheet import *
 
 #############################################################################################
 # Player
 class Entity: # base class that encompasses players and enemies
     def collide(self):
         pass
+
+class PlayerHeart:
+    def __init__(self, numerical_value, heart_value): # hearts have set width and are rendered in the top left corner. all we need is an offset
+        self.dimensions = 32
+        self.x = 16 + numerical_value * 32
+        self.pos = Vector((self.x,20))
+        if heart_value == "half":
+            self.sprite = Sprite_Sheet([1,5])
+        else:
+            self.sprite = Sprite_Sheet([2,5])
+
+    def draw(self,canvas):
+        self.sprite.draw(canvas, self.pos, (self.dimensions, self.dimensions))
+
 
 class Player(Entity):  # model the character as a ball for now convenient hitboxes
     def __init__(self, pos=Vector((0, 0)), vel=Vector((0, 0)), radius=32, columns=1, row=1, width=0,height=0, map=None):
@@ -34,7 +49,12 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
         self.terminal_vel = 2
         self.level_finished = False
         self.relative_pos = Vector((width/2,height/2))
+
         self.direction = "right"
+
+        self.lives = 3.5 # amount of lives
+        self.heart_array = []
+        self.update_hearts()
 
         self.clock = Clock()
 
@@ -42,18 +62,21 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
     #     return self.pos.y + self.radius
 
     def update(self):
+        if self.lives == 0:
+            return  "Game Over"
+        
         if self.level_finished:
             return "Next Level"
 
         self.pos.add(self.vel)
 
-        # Removing X Velocity over time 
-            # Removes 1/2 each loop 
+        # Removing X Velocity over time
+            # Removes 1/2 each loop
             # When at less than 0.1 set to 0
         if (self.vel.x > 0):
             if(self.vel.x < 0.1):
                 self.vel.subtract(Vector((self.vel.x, 0)))
-            else: 
+            else:
                 tmpx = self.vel.x / 2
                 self.vel.subtract(Vector((tmpx, 0)))
 
@@ -97,7 +120,7 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
                 self.state = "rest"
                 self.remove_move("s")
         self.vector_transform = Vector((self.WIDTH / 2, self.HEIGHT / 2)) - (self.pos)
-        self.clock.increment_clock
+        self.clock.increment_clock()
 
     def draw(self, canvas):
         # canvas.draw_circle((self.WIDTH / 2, self.HEIGHT / 2),
@@ -106,6 +129,8 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
         #                    "blue",
         #                    "blue")
         self.sprite.draw(canvas, Vector((self.WIDTH / 2, self.HEIGHT / 2)), (self.diameter, self.diameter))
+        for heart in self.heart_array:
+            heart.draw(canvas)
 
 ##################################################################
 # Player Move Handling
@@ -131,6 +156,8 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
             self.__setstate__("blink")
         if move == simplegui.KEY_MAP["e"]:
             self.level_finished = True
+        if move == simplegui.KEY_MAP["k"]:
+            self.take_hit(0.5)
 
     def move_left(self, speed):
         self.direction = "left"
@@ -153,6 +180,18 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
         self.vel = Vector((0,0))
         self.pos.y -= 0.1
         pass
+
+    def update_hearts(self):
+        self.heart_array = []
+        for full_heart in range(0, math.floor(self.lives)):
+            self.heart_array.append(PlayerHeart(full_heart,"full"))
+        if self.lives % 1 != 0:
+            self.heart_array.append(PlayerHeart(math.floor(self.lives),"half"))
+
+    def take_hit(self, damage):
+        self.lives -= damage
+        self.update_hearts()
+
 
 
 #################################################

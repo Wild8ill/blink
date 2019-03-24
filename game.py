@@ -143,6 +143,11 @@ class Game:
         if self.player.update() == "Next Level":
             self.level += 1 # Increase the level id of the game object
             self.setup_level() # Call the constructor of the object
+
+        if self.player.update() == "Game Over":
+            self.level = -1
+            self.setup_level() # Call the constructor of the object
+
         
         # Draw the player
         self.player.draw(canvas)
