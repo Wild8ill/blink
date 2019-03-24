@@ -202,6 +202,7 @@ class Game:
         # Go through all objects rendered by the camera
         for object in self.camera.objects_to_render():
             if isinstance(object, Entity) and not isinstance(object,Player):
+
                 self.entityArr.append(object) # Adds Enemies to the Entity Array
             elif isinstance(object,Platform):
                 self.platformArr.append(object) # Adds platforms to Platform Array
