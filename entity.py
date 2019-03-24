@@ -15,6 +15,8 @@ from sprite_sheet import *
 class Entity: # base class that encompasses players and enemies
     def collide(self):
         pass
+    def entity_collisions(self,object):
+        pass
 
 class PlayerHeart:
     def __init__(self, numerical_value, heart_value): # hearts have set width and are rendered in the top left corner. all we need is an offset
@@ -52,7 +54,7 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
 
         self.direction = "right"
 
-        self.lives = 3.5 # amount of lives
+        self.lives = 3 # amount of lives
         self.heart_array = []
         self.update_hearts()
 
@@ -64,7 +66,7 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
     def update(self):
         if self.lives == 0:
             return  "Game Over"
-        
+
         if self.level_finished:
             return "Next Level"
 
@@ -181,6 +183,11 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
         self.pos.y -= 0.1
         pass
 
+    def entity_collisions(self,object):
+        if isinstance(object,Vortex):
+            self.level_finished = True
+
+
     def update_hearts(self):
         self.heart_array = []
         for full_heart in range(0, math.floor(self.lives)):
@@ -242,5 +249,8 @@ class Vortex(Entity):  # the goal of the level. Player collision with it will ca
                 self.sprite.set_frame([0,6])
             else: self.sprite.step_frame()
         self.sprite.draw(canvas, self.relative_pos, (self.width, self.width))
+
+    def collide(self):
+        print("you're inside me")
 
 

@@ -89,7 +89,8 @@ class EntityCollidable(Collidable):
         distance = distance_vector.length()
         if distance <= self.obj_1.radius + self.obj_2.radius:
             if not self.isColliding:
-                object.collide()
+                self.obj_1.entity_collisions(self.obj_2)
+                self.obj_2.entity_collisions(self.obj_1)
                 self.isColliding = True
         else:
             self.isColliding = False
@@ -199,12 +200,11 @@ class Game:
                 self.entityArr.insert(0, object) # Adds player to the first position of the Entity Array
 
         # Go through all objects rendered by the camera
-        # for object in self.camera.objects_to_render():
-        for object in map:    
-            if isinstance(object, Enemy):
+        for object in self.camera.objects_to_render():
+            if isinstance(object, Entity) and not isinstance(object,Player):
+
                 self.entityArr.append(object) # Adds Enemies to the Entity Array
             elif isinstance(object,Platform):
-
                 self.platformArr.append(object) # Adds platforms to Platform Array
             else:
                 pass
