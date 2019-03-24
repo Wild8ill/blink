@@ -75,7 +75,7 @@ class MapConstructor:
             "#350000":FloatingPlatform(X,Y,32), # collide with, but no grass on
             "#570000":TopBlock(X, Y, 32), # floating platform, but with grass
             "#00e9e5":Player(Vector((X, Y)), Vector((0, 0)), 32, 9, 5, self.WIDTH, self.HEIGHT, self), # your player, put wherever ou like
-            "#002657":Blip(X,Y,1), #blue bois
+            "#002657":Blip(X,Y,2), #blue bois
             "#fff100": Heart(X, Y), #
             "#2d0b0b":GameOverScreen(X,Y,self.WIDTH,self.HEIGHT), #never touch these
             "#aedecb":HomeScreen(X, Y, self.WIDTH, self.HEIGHT), #never touch these
