@@ -24,7 +24,8 @@ def return_level_file(level_id): # a dictionary wrapper to allow the generation 
         2:"level2.png",
         3:"level3.png",
         4:"level4.png",
-        5: "collision_test.png"
+        5:"level5.png",
+        6: "collision_test.png"
     }
     return "levels/%s"%level_dict.get(level_id)
 
@@ -74,7 +75,7 @@ class PlatformCollidable(Collidable):
             if line.distance_to_object(object.relative_pos) < object.radius and line.within_points(object.relative_pos):
                 if not self.isColliding:
                     #object.vel = Vector((0,0))
-                    object.collide()
+                    object.collide(platform)
                      # TODO: ADD LOGIC FOR WHAT TO DO ON COLLISION
                     self.isColliding = True
             else:

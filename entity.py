@@ -13,7 +13,7 @@ from sprite_sheet import *
 #############################################################################################
 # Player
 class Entity: # base class that encompasses players and enemies
-    def collide(self):
+    def collide(self,platform):
         pass
     def entity_collisions(self,object):
         pass
@@ -177,8 +177,10 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
     def __setstate__(self, state):
         self.state = state
 
-    def collide(self):
+    def collide(self,platform):
         # self.vel.reflect(Vector((0,-1)))
+        if isinstance(platform,SpikeBlock):
+            self.take_hit(1)
         self.vel = Vector((0,0))
         self.pos.y -= 0.1
         pass
@@ -186,6 +188,8 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
     def entity_collisions(self,object):
         if isinstance(object,Vortex):
             self.level_finished = True
+        if isinstance(object,Blip):
+            self.take_hit(0.5)
 
 
     def update_hearts(self):
@@ -227,7 +231,7 @@ class Blip(Enemy):
     def update(self):
         self.pos += self.vel
 
-    def collide(self):
+    def collide(self, platform):
         self.vel.reflect(Vector((0,-1)))
 
 
@@ -249,8 +253,5 @@ class Vortex(Entity):  # the goal of the level. Player collision with it will ca
                 self.sprite.set_frame([0,6])
             else: self.sprite.step_frame()
         self.sprite.draw(canvas, self.relative_pos, (self.width, self.width))
-
-    def collide(self):
-        print("you're inside me")
 
 

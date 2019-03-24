@@ -71,15 +71,17 @@ class MapConstructor:
         hexval = hexval.lower()
         # a 32 pixel wide sprite should be 16 pixels across
         object_dict = {
-            "#000000":Platform(),
-            "#570000":FloatingPlatform(X,Y,32),
-            "#00e9e5":Player(Vector((X, Y)), Vector((0, 0)), 32, 9, 5, self.WIDTH, self.HEIGHT, self),
-            "#002657":Blip(X,Y,1),
-            "#fff100": Heart(X, Y),
-            "#2d0b0b":GameOverScreen(X,Y,self.WIDTH,self.HEIGHT),
-            "#aedecb":HomeScreen(X, Y, self.WIDTH, self.HEIGHT),
-            "#824409":Underblock(X,Y,32),
-            "#510982":Vortex(X,Y)
+            "#000000":Platform(), # never use this
+            "#350000":FloatingPlatform(X,Y,32), # collide with, but no grass on
+            "#570000":TopBlock(X, Y, 32), # floating platform, but with grass
+            "#00e9e5":Player(Vector((X, Y)), Vector((0, 0)), 32, 9, 5, self.WIDTH, self.HEIGHT, self), # your player, put wherever ou like
+            "#002657":Blip(X,Y,1), #blue bois
+            "#fff100": Heart(X, Y), #
+            "#2d0b0b":GameOverScreen(X,Y,self.WIDTH,self.HEIGHT), #never touch these
+            "#aedecb":HomeScreen(X, Y, self.WIDTH, self.HEIGHT), #never touch these
+            "#824409":Underblock(X,Y,32), #block with no collisions, just looks like a block
+            "#510982":Vortex(X,Y), # end goal, probably only want one
+            "#787878":SpikeBlock(X,Y,32)   #stabby stabby
         }
         return object_dict.get(hexval)
 
