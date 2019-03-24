@@ -199,7 +199,8 @@ class Game:
                 self.entityArr.insert(0, object) # Adds player to the first position of the Entity Array
 
         # Go through all objects rendered by the camera
-        for object in self.camera.objects_to_render():
+        # for object in self.camera.objects_to_render():
+        for object in map:    
             if isinstance(object, Enemy):
                 self.entityArr.append(object) # Adds Enemies to the Entity Array
             elif isinstance(object,Platform):
