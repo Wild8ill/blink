@@ -193,14 +193,15 @@ class Game:
         
         # Create camera object
         # Go through items of map until find the player object
-        for object in map:    
+        for object in map:
             if isinstance(object, Player):
                 self.player = object
                 self.camera = Camera(WIDTH,HEIGHT, self.player, map)
                 self.entityArr.insert(0, object) # Adds player to the first position of the Entity Array
 
         # Go through all objects rendered by the camera
-        for object in self.camera.objects_to_render():
+        # for object in self.camera.objects_to_render():
+        for object in map:
             if isinstance(object, Entity) and not isinstance(object,Player):
 
                 self.entityArr.append(object) # Adds Enemies to the Entity Array
