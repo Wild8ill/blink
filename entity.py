@@ -9,8 +9,6 @@ from util import *
 from platforms import *
 from abc import ABC, abstractmethod
 
-IMG = 'https://i.postimg.cc/7L7LYWTC/blink-sprites.png'
-
 #############################################################################################
 # Player
 class Entity: # base class that encompasses players and enemies
@@ -18,14 +16,13 @@ class Entity: # base class that encompasses players and enemies
         pass
 
 class Player(Entity):  # model the character as a ball for now convenient hitboxes
-    def __init__(self, pos=Vector((0, 0)), vel=Vector((0, 0)), radius=32, image=IMG, columns=1, row=1, width=0,
-                 height=0, map=None):
+    def __init__(self, pos=Vector((0, 0)), vel=Vector((0, 0)), radius=32, columns=1, row=1, width=0,height=0, map=None):
         self.pos = pos
         self.vel = vel
         self.radius = radius
         self.diameter = radius * 2
         self.border = 1
-        self.sprite = Sprite(image, columns, row)
+        self.sprite = Sprite_Sheet([0,3])
         self.move_buffer = []
         self.collision = []
         self.state = "rest"
@@ -37,11 +34,14 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
         self.terminal_vel = 2
         self.level_finished = False
         self.relative_pos = Vector((width/2,height/2))
+        self.direction = "right"
+
+        self.clock = Clock()
 
     # def offsetB(self):
     #     return self.pos.y + self.radius
 
-    def update(self, clock):
+    def update(self):
         if self.level_finished:
             return "Next Level"
 
@@ -65,32 +65,40 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
         # State Checking
             # What Sprite do we
         if self.state == "rest":
-            self.sprite.set_frame([0, 0])
+            if self.direction == "right":
+                self.sprite.set_frame([0, 3])
+            else:
+                self.sprite.set_frame([4,2])
+
             for move in self.move_buffer:
                 self.handle_move(move)
 
         elif self.state == "attack":
-            self.sprite.set_frame([0, 0])
-            if clock.return_mod(2):
+            if self.direction == "right":
+                self.sprite.set_frame([0, 0])
+            else:
+                self.sprite.set_frame([8,1])
+
+            if self.clock.return_mod(5):
                 self.sprite.step_frame()
                 self.animation_frame += 1
             self.move_right(1)
-            if self.animation_frame == 9:
+            if self.animation_frame == 8:
                 self.animation_frame = 0
                 self.state = "rest"
                 self.remove_move("a")
 
         elif self.state == "blink":
-            if clock.return_mod(10):
+            if self.clock.return_mod(10):
                 print("change")
                 self.sprite.step_frame()
                 self.animation_frame += 1
-            if self.animation_frame == 9:
+            if self.animation_frame == 8:
                 self.animation_frame = 0
                 self.state = "rest"
                 self.remove_move("s")
         self.vector_transform = Vector((self.WIDTH / 2, self.HEIGHT / 2)) - (self.pos)
-        self.check_collision()
+        self.clock.increment_clock
 
     def draw(self, canvas):
         # canvas.draw_circle((self.WIDTH / 2, self.HEIGHT / 2),
@@ -126,10 +134,12 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
             self.level_finished = True
 
     def move_left(self, speed):
+        self.direction = "left"
         if math.fabs(self.vel.x) < self.terminal_vel:
             self.vel.add(Vector((-speed, 0)))
 
     def move_right(self, speed):
+        self.direction = "right"
         if math.fabs(self.vel.x) < self.terminal_vel:
             self.vel.add(Vector((speed, 0)))
 
@@ -144,13 +154,6 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
         self.vel = Vector((0,0))
         self.pos.y -= 0.1
         pass
-
-    def check_collision(self):
-        if len(self.collision) != 0:
-            for object in self.collision:
-                if isinstance(object, Platform):
-                    self.vel.y = 0
-                    self.pos.y = object.y - self.radius
 
 
 #################################################
@@ -181,5 +184,25 @@ class Blip(Enemy):
 
     def collide(self):
         self.vel.reflect(Vector((0,-1)))
+
+
+class Vortex(Entity):  # the goal of the level. Player collision with it will cause the level to increment.
+    def __init__(self, x, y, width=64):
+        self.x = x
+        self.y = y
+        self.pos = Vector((x, y))
+        self.relative_pos = self.pos.copy()
+        self.internal_clock = Clock()
+        self.sprite = Sprite_Sheet([0,6])
+        self.width = width
+        self.radius = width/2
+
+    def draw(self, canvas):
+        self.internal_clock.increment_clock()
+        if self.internal_clock.return_mod(3):
+            if self.sprite.frame_index == [6,6]:
+                self.sprite.set_frame([0,6])
+            else: self.sprite.step_frame()
+        self.sprite.draw(canvas, self.relative_pos, (self.width, self.width))
 
 

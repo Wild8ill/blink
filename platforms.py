@@ -57,10 +57,16 @@ class FloatingPlatform(Platform):
         self.width = width
         super().__init__(x, y)
 
-class Underblock(FloatingPlatform):
+class Underblock:
     def __init__(self, x, y=400, width=0):
         self.y = y
         self.x = x
-        self.width = width
-        super().__init__(x, y)
-        self.sprite.set
+        self.sprite = Sprite_Sheet()
+        self.pos = Vector((x, y))
+        self.relative_pos = self.pos.copy()
+        self.block_width = 32
+
+    def draw(self, canvas):
+        self.sprite.draw(canvas, self.relative_pos, (self.block_width, self.block_width), [5, 5])
+
+

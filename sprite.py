@@ -4,7 +4,7 @@ except ImportError:
     import SimpleGUICS2Pygame.simpleguics2pygame as simplegui
 
 class Sprite:
-    def __init__(self, image, columns, rows):
+    def __init__(self, image, columns, rows, frame_index = [0,0]):
         self.image = simplegui.load_image(image)
         self.width = self.image.get_width()
         self.height = self.image.get_height()
@@ -12,7 +12,7 @@ class Sprite:
         self.rows = rows
         self.frameSize = (self.width // columns, self.height // rows)
         self.frameCentre = (self.frameSize[0] / 2, self.frameSize[1] / 2)
-        self.frame_index = [0,0]
+        self.frame_index = frame_index
 
     def step_frame(self):
         self.frame_index[0] = (self.frame_index[0] + 1) % self.columns

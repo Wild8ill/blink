@@ -14,7 +14,7 @@ WIDTH = 800
 HEIGHT = 450
 MAP_CONSTRUCTOR = MapConstructor(WIDTH,HEIGHT)
 map = None
-clock = Clock()
+#clock = Clock()
 
 def return_level_file(level_id): # a dictionary wrapper to allow the generation and passing of levels automatically
     level_dict = {
@@ -85,10 +85,11 @@ class EntityCollidable(Collidable):
     # Obj 2 = Entity = Sphere
     def update(self):
         # @TODO: Create logic for comparing objects to check collision that works
-        distance_vector = Vector((self.obj_2.pos.getP())) - Vector((self.obj_1.pos.getP()))
+        distance_vector = Vector((self.obj_2.relative_pos.getP())) - Vector((self.obj_1.relative_pos.getP()))
         distance = distance_vector.length()
         if distance <= self.obj_1.radius + self.obj_2.radius:
             if not self.isColliding:
+                object.collide()
                 self.isColliding = True
         else:
             self.isColliding = False
@@ -138,7 +139,8 @@ class Game:
                     object.update()
 
         # Update the current level
-        if self.player.update(clock) == "Next Level":
+        #if self.player.update(clock) == "Next Level":
+        if self.player.update() == "Next Level":
             self.level += 1 # Increase the level id of the game object
             self.setup_level() # Call the constructor of the object
         
@@ -219,9 +221,9 @@ class Events:
 
         game.player.remove_move(key)
 
-    def timer(self):
-        global clock
-        clock.increment_clock()
+    # def timer(self):
+    #     global clock
+    #     clock.increment_clock()
 
 ###############
 # Rest of Code
@@ -238,11 +240,11 @@ frame.set_draw_handler(game.draw)
 
 # Event Handling
 event = Events() # Event Handler Object
-timer = simplegui.create_timer(1, event.timer)
+#timer = simplegui.create_timer(1, event.timer)
     # Register Key down and Key Up events of key press
 frame.set_keydown_handler(event.key_down) # On Key Down
 frame.set_keyup_handler(event.key_up) # On Key Up
 
 # Event Handling
-timer.start()
+#timer.start()
 frame.start()
