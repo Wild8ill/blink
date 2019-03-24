@@ -53,6 +53,15 @@ class Interaction:
         for entityCollidable in self.entityCollisionArr:
             entityCollidable.update()
 
+    def reset_interaction(self):
+        self.platformCollisionArr = [] # Every Entity V Platform
+        self.entityCollisionArr = []  # Player V Entity
+        pass
+    
+    def print_size(self):
+        print(len(self.platformCollisionArr))
+        print(len(self.entityCollisionArr))
+        pass
 
 # Handles the collision between two objects
 class Collidable:
@@ -168,6 +177,7 @@ class Game:
     # On new map run this to get every interaction to be modelled
         # Added to the interaction object as a collidable
     def model_interactions(self):
+        self.interaction.reset_interaction()
         # Every Entity vs Platform Interaction
         for entity in self.entityArr:
             for platform in self.platformArr:
@@ -177,6 +187,7 @@ class Game:
             for entityTwo in self.entityArr:
                 if entityOne is not entityTwo:
                     self.interaction.addEntityCollidable(entityOne, entityTwo)
+        self.interaction.print_size()
 
     # Update the current level then run the setup for it
         ## Added so we can force level skipping to test
