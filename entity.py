@@ -235,6 +235,9 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
             self.level_finished = True
         if isinstance(object, Blip):
             self.take_hit(0.5)
+        if isinstance(object, Bibble):
+            self.vel.x = self.terminal_vel
+            self.vel.reflect(Vector((-1,-1)))
 
     def update_hearts(self):
         self.heart_array = []
@@ -252,28 +255,53 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
 # ENEMY
 
 class Enemy(Entity):
-    def __init__(self, x, y, sprite_progression=[0], radius=16):
+    def __init__(self, x, y, frame_index = [0,0], radius=16):
         self.x = x
         self.y = y
         self.radius = radius
         self.pos = Vector((x, y))
         self.relative_pos = self.pos
-        self.sprite_progression = sprite_progression
-        # self.sprite = Sprite(IMG, 9, 6)
-        self.sprite = Sprite_Sheet()
+        self.sprite = Sprite_Sheet(frame_index)
 
     def draw(self, canvas):
-        self.sprite.draw(canvas, self.relative_pos, (self.radius * 2, self.radius * 2), [0, 4])
+        self.sprite.draw(canvas, self.relative_pos, (self.radius * 2, self.radius * 2))
 
 
 class Blip(Enemy):
     def __init__(self, x, y, velocity):
         self.vel = Vector((0, velocity))
-        self.sprite_progression = [1, 2, 1, 4]
-        super().__init__(x, y, self.sprite_progression)
+        super().__init__(x, y, [0, 4])
 
     def update(self):
         self.pos += self.vel
+
+    def collide(self, platform, direction, collision_coord):
+        self.vel.reflect(Vector((0, -1)))
+
+class Bibble(Enemy):
+    def __init__(self, x, y, velocity):
+        self.vel = Vector((velocity, 0))
+        super().__init__(x, y, [4,4])
+        self.internal_clock = Clock()
+        self.flip_flop = 2 # allows frame to go up and down
+
+
+    def update(self):
+        self.internal_clock.increment_clock()
+        self.pos += self.vel
+        if self.internal_clock.return_mod(5):
+            if self.flip_flop == 2 or self.flip_flop == 4:
+                self.flip_flop += 1
+            else:
+                self.flip_flop -= 1
+            self.sprite.set_frame([self.flip_flop,4])
+
+        if self.internal_clock.return_mod(48): # every 2 blocks or so
+            self.vel.reflect(Vector((-1,0)))
+            if self.flip_flop == 2 or self.flip_flop == 3:
+                self.flip_flop = 4
+            else:
+                self.flip_flop = 2
 
     def collide(self, platform, direction, collision_coord):
         self.vel.reflect(Vector((0, -1)))

@@ -83,7 +83,8 @@ class MapConstructor:
             "#f7e600":VictoryScreen(X, Y, self.WIDTH, self.HEIGHT),
             "#824409":Underblock(X,Y,32), #block with no collisions, just looks like a block
             "#510982":Vortex(X,Y), # end goal, probably only want one
-            "#787878":SpikeBlock(X,Y,32)   #stabby stabby
+            "#787878":SpikeBlock(X,Y,32),   #stabby stabby
+            "#c180c1":Bibble(X,Y,2)
         }
         return object_dict.get(hexval)
 
