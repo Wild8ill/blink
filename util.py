@@ -154,9 +154,9 @@ class Parallax:
 
     def scroll(self, direction):
         if (direction == "left"):
-            self.pos -= Vector((self.scroll_speed, 0))
-        elif (direction == "right"):
             self.pos += Vector((self.scroll_speed, 0))
+        elif (direction == "right"):
+            self.pos -= Vector((self.scroll_speed, 0))
         self.left_edge = self.pos.getP()[0] - self.WIDTH / 2
         self.right_edge = self.pos.getP()[0] + self.WIDTH / 2
 

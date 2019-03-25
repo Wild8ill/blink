@@ -65,6 +65,7 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
         self.clock = Clock()
         self.fall = True  # whether or not to fall due to gravity
         self.jumps = 2
+        self.blink = 5
 
     # def offsetB(self):
     #     return self.pos.y + self.radius
@@ -132,7 +133,7 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
                 self.state = "rest"
                 self.remove_move("a")
 
-        elif self.state == "blink":
+        elif self.state == "blink" and not self.blink == 0:
             initial_pos = self.pos.copy()
             self.fall = False
             self.vel = Vector((0, 0))
@@ -152,6 +153,7 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
                 else:
                     self.pos = initial_pos + Vector((-160, 0))  # teleport as many blocks across
                 self.fall = True
+                self.blink -= 1
 
         self.vector_transform = Vector((self.WIDTH / 2, self.HEIGHT / 2)) - (self.pos)
         self.clock.increment_clock()
