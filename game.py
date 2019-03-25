@@ -20,12 +20,16 @@ def return_level_file(level_id): # a dictionary wrapper to allow the generation 
     level_dict = {
         -1:"gameover.png",
         0:"welcome.png",
-        1:"testmap.png",
+        1:"level1.png",
         2:"level2.png",
         3:"level3.png",
         4:"level4.png",
         5:"level5.png",
-        6: "collision_test.png"
+        6: "level6.png",
+        7: "level7.png",
+        8: "level8.png",
+        9: "level9.png",
+        10: "tribute.png",
     }
     return "levels/%s"%level_dict.get(level_id)
 
@@ -87,8 +91,6 @@ class PlatformCollidable(Collidable):
                         direction = "bottom"
                         collision_coord = platform.pos.copy().y + platform.block_width/2
 
-
-                    #object.vel = Vector((0,0))
                     object.collide(platform, direction, collision_coord)
                      # TODO: ADD LOGIC FOR WHAT TO DO ON COLLISION
                     self.isColliding = True
