@@ -13,7 +13,7 @@ from sprite_sheet import *
 #############################################################################################
 # Player
 class Entity: # base class that encompasses players and enemies
-    def collide(self,platform):
+    def collide(self,platform, direction, collision_coord):
         pass
     def entity_collisions(self,object):
         pass
@@ -177,13 +177,24 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
     def __setstate__(self, state):
         self.state = state
 
-    def collide(self,platform):
+    def collide(self,platform, direction, collision_coord):
         # self.vel.reflect(Vector((0,-1)))
         if isinstance(platform,SpikeBlock):
             self.take_hit(1)
-        self.vel = Vector((0,0))
-        self.pos.y -= 0.1
-        pass
+
+        # assume block
+        if direction == "left":
+            self.pos.x = collision_coord - self.radius
+            self.vel.x = 0
+        if direction == "right":
+            self.pos.x = collision_coord + self.radius
+            self.vel.x = 0
+        if direction == "top":
+            self.pos.y = collision_coord - self.radius
+            self.vel.y = 0
+        if direction == "bottom":
+            self.pos.y = collision_coord + self.radius
+            self.vel.y = 0
 
     def entity_collisions(self,object):
         if isinstance(object,Vortex):
@@ -231,7 +242,7 @@ class Blip(Enemy):
     def update(self):
         self.pos += self.vel
 
-    def collide(self, platform):
+    def collide(self, platform, direction, collision_coord):
         self.vel.reflect(Vector((0,-1)))
 
 

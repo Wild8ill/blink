@@ -74,8 +74,22 @@ class PlatformCollidable(Collidable):
         for line in line_tuple:
             if line.distance_to_object(object.relative_pos) < object.radius and line.within_points(object.relative_pos):
                 if not self.isColliding:
+                    if line == line_tuple[0]:
+                        direction = "left"
+                        collision_coord = platform.pos.copy().x - platform.block_width/2
+                    if line == line_tuple[1]:
+                        direction = "top"
+                        collision_coord = platform.pos.copy().y - platform.block_width/2
+                    if line == line_tuple[2]:
+                        direction = "right"
+                        collision_coord = platform.pos.copy().x + platform.block_width/2
+                    if line == line_tuple[3]:
+                        direction = "bottom"
+                        collision_coord = platform.pos.copy().y + platform.block_width/2
+
+
                     #object.vel = Vector((0,0))
-                    object.collide(platform)
+                    object.collide(platform, direction, collision_coord)
                      # TODO: ADD LOGIC FOR WHAT TO DO ON COLLISION
                     self.isColliding = True
             else:
