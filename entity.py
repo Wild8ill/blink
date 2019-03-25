@@ -7,7 +7,6 @@ from vector import *
 from sprite import *
 from util import *
 from platforms import *
-from abc import ABC, abstractmethod
 from sprite_sheet import *
 
 
@@ -65,12 +64,13 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
 
         self.clock = Clock()
         self.fall = True  # whether or not to fall due to gravity
+        self.jumps = 2
 
     # def offsetB(self):
     #     return self.pos.y + self.radius
 
     def update(self):
-        if self.lives == 0:
+        if self.lives <= 0:
             return "Game Over"
 
         if self.level_finished:
@@ -93,8 +93,6 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
         self.vel.x *= 0.9
         if math.fabs(self.vel.x) < 0.5:
             self.vel.x = 0
-        else:
-            print(math.fabs(self.vel.x))
 
         # Adds some "Gravity"
         if self.fall:
@@ -138,7 +136,7 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
             initial_pos = self.pos.copy()
             self.fall = False
             self.vel = Vector((0, 0))
-            if self.clock.return_mod(8):
+            if self.clock.return_mod(4):
                 if self.direction == "right":
                     self.sprite.step_frame()
                 else:
@@ -180,7 +178,8 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
 
     def handle_move(self, move):
         if move == simplegui.KEY_MAP["up"]:
-            self.jump()
+            if self.jumps != 0:
+                self.jump()
             self.remove_move(move)
         if move == simplegui.KEY_MAP["left"]:
             self.move_left(3)
@@ -204,6 +203,7 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
     def jump(self):
         self.vel.y = 0
         self.vel.add(Vector((0, -3)))
+        self.jumps -= 1
 
     def __setstate__(self, state):
         self.state = state
@@ -223,6 +223,7 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
         if direction == "top":
             self.pos.y = collision_coord - self.radius
             self.vel.y = 0
+            self.jumps = 2
         if direction == "bottom":
             self.pos.y = collision_coord + self.radius
             self.vel.y = 0

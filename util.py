@@ -197,3 +197,14 @@ class GameOverScreen(StaticScreen):
         super().__init__(x, y, width, height)
         self.sprite = Sprite("https://i.postimg.cc/cLhcLWnf/game-over.png",1,1)
 
+class VictoryScreen(StaticScreen):
+    def __init__(self,x,y,width,height):
+        super().__init__(x, y, width, height)
+        self.sprite = Sprite("https://i.postimg.cc/gjp86ZX4/you-win.png",1,1)
+
+class ControlScreen(StaticScreen):
+    def __init__(self,x,y,width,height):
+        super().__init__(x, y, width, height)
+        self.sprite = Sprite("https://i.postimg.cc/mrxDDGFy/sprites.png",1,1)
+
+

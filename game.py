@@ -20,16 +20,18 @@ def return_level_file(level_id): # a dictionary wrapper to allow the generation 
     level_dict = {
         -1:"gameover.png",
         0:"welcome.png",
-        1:"level1.png",
-        2:"level2.png",
-        3:"level3.png",
-        4:"level4.png",
-        5:"level5.png",
-        6: "level6.png",
-        7: "level7.png",
-        8: "level8.png",
-        9: "level9.png",
-        10: "tribute.png",
+        1:"how_to_play.png",
+        2:"level1.png",
+        3:"level2.png",
+        4:"level3.png",
+        5:"level4.png",
+        6:"level5.png",
+        7: "level6.png",
+        8: "level7.png",
+        9: "level8.png",
+        10: "level9.png",
+        11: "tribute.png",
+        12:"victory.png"
     }
     return "levels/%s"%level_dict.get(level_id)
 
@@ -123,7 +125,7 @@ class Game:
         self.score = 0
         # In PLAY 
         self.inPlay = False # Are we playing the game or at main menu
-        self.level = 0# The Current Level
+        self.level = 0 # The Current Level
         # GAME ITEMS
         self.player = None  # will be overwritten
         self.camera = None # will also be overwritten
@@ -239,8 +241,11 @@ class Events:
         game.player.add_move(key)
 
     def key_up(self, key):
-        if key == simplegui.KEY_MAP["space"] and (game.level == -1 or game.level == 0):
+        if key == simplegui.KEY_MAP["space"] and (game.level == -1 or game.level == 0 or game.level == 1):
             game.level += 1
+            game.setup_level()
+        elif key == simplegui.KEY_MAP["space"] and game.level == 12:
+            game.level = 2
             game.setup_level()
 
         game.player.remove_move(key)
@@ -264,7 +269,7 @@ frame.set_draw_handler(game.draw)
 
 # Event Handling
 event = Events() # Event Handler Object
-#timer = simplegui.create_timer(1, event.timer)
+
     # Register Key down and Key Up events of key press
 frame.set_keydown_handler(event.key_down) # On Key Down
 frame.set_keyup_handler(event.key_up) # On Key Up
