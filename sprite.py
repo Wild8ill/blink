@@ -19,6 +19,12 @@ class Sprite:
         if self.frame_index[0] == 0:
             self.frame_index[1] = (self.frame_index[1] + 1) % self.rows
 
+    def dec_frame(self):
+        self.frame_index[0] = (self.frame_index[0] - 1) % self.columns
+        if self.frame_index[0] == 0:
+            self.frame_index[1] = (self.frame_index[1] - 1) % self.rows
+
+
     def go_back_frame(self):
         pass
 

@@ -10,36 +10,41 @@ from platforms import *
 from abc import ABC, abstractmethod
 from sprite_sheet import *
 
+
 #############################################################################################
 # Player
-class Entity: # base class that encompasses players and enemies
-    def collide(self,platform, direction, collision_coord):
+class Entity:  # base class that encompasses players and enemies
+    def collide(self, platform, direction, collision_coord):
         pass
-    def entity_collisions(self,object):
+
+    def entity_collisions(self, object):
         pass
+
 
 class PlayerHeart:
-    def __init__(self, numerical_value, heart_value): # hearts have set width and are rendered in the top left corner. all we need is an offset
+    def __init__(self, numerical_value,
+                 heart_value):  # hearts have set width and are rendered in the top left corner. all we need is an offset
         self.dimensions = 32
         self.x = 16 + numerical_value * 32
-        self.pos = Vector((self.x,20))
+        self.pos = Vector((self.x, 20))
         if heart_value == "half":
-            self.sprite = Sprite_Sheet([1,5])
+            self.sprite = Sprite_Sheet([1, 5])
         else:
-            self.sprite = Sprite_Sheet([2,5])
+            self.sprite = Sprite_Sheet([2, 5])
 
-    def draw(self,canvas):
+    def draw(self, canvas):
         self.sprite.draw(canvas, self.pos, (self.dimensions, self.dimensions))
 
 
 class Player(Entity):  # model the character as a ball for now convenient hitboxes
-    def __init__(self, pos=Vector((0, 0)), vel=Vector((0, 0)), radius=32, columns=1, row=1, width=0,height=0, map=None):
+    def __init__(self, pos=Vector((0, 0)), vel=Vector((0, 0)), radius=32, columns=1, row=1, width=0, height=0,
+                 map=None):
         self.pos = pos
         self.vel = vel
         self.radius = radius
         self.diameter = radius * 2
         self.border = 1
-        self.sprite = Sprite_Sheet([0,3])
+        self.sprite = Sprite_Sheet([0, 3])
         self.move_buffer = []
         self.collision = []
         self.state = "rest"
@@ -50,22 +55,23 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
         self.vector_transform = Vector((self.WIDTH / 2, self.HEIGHT / 2)) - self.pos
         self.terminal_vel = 2
         self.level_finished = False
-        self.relative_pos = Vector((width/2,height/2))
+        self.relative_pos = Vector((width / 2, height / 2))
 
         self.direction = "right"
 
-        self.lives = 3 # amount of lives
+        self.lives = 3  # amount of lives
         self.heart_array = []
         self.update_hearts()
 
         self.clock = Clock()
+        self.fall = True  # whether or not to fall due to gravity
 
     # def offsetB(self):
     #     return self.pos.y + self.radius
 
     def update(self):
         if self.lives == 0:
-            return  "Game Over"
+            return "Game Over"
 
         if self.level_finished:
             return "Next Level"
@@ -73,54 +79,82 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
         self.pos.add(self.vel)
 
         # Removing X Velocity over time
-            # Removes 1/2 each loop
-            # When at less than 0.1 set to 0
-        if (self.vel.x > 0):
-            if(self.vel.x < 0.1):
-                self.vel.subtract(Vector((self.vel.x, 0)))
-            else:
-                tmpx = self.vel.x / 2
-                self.vel.subtract(Vector((tmpx, 0)))
+        # Removes 1/2 each loop
+        # When at less than 0.1 set to 0
+        # if (self.vel.x > 0):
+        #     if(self.vel.x < 0.1):
+        #         self.vel.subtract(Vector((self.vel.x, 0)))
+        #     else:
+        #         tmpx = self.vel.x / 2
+        #         self.vel.subtract(Vector((tmpx, 0)))
+
+        # JOsh code - Wrong
+
+        self.vel.x *= 0.9
+        if math.fabs(self.vel.x) < 0.5:
+            self.vel.x = 0
+        else:
+            print(math.fabs(self.vel.x))
 
         # Adds some "Gravity"
-        self.vel.subtract(Vector((0, -0.0981)))
+        if self.fall:
+            self.vel.subtract(Vector((0, -0.0981)))
 
         self.MAP.update_positions()  # calculates all relative positions for objects, now that player is set up properly
 
         # State Checking
-            # What Sprite do we
+        # What Sprite do we show
         if self.state == "rest":
             if self.direction == "right":
                 self.sprite.set_frame([0, 3])
             else:
-                self.sprite.set_frame([4,2])
+                self.sprite.set_frame([4, 2])
 
             for move in self.move_buffer:
                 self.handle_move(move)
 
         elif self.state == "attack":
-            if self.direction == "right":
-                self.sprite.set_frame([0, 0])
-            else:
-                self.sprite.set_frame([8,1])
+            if self.animation_frame == 0:
+                if self.direction == "right":
+                    self.sprite.set_frame([0, 0])
+                else:
+                    self.sprite.set_frame([8, 1])
 
-            if self.clock.return_mod(5):
-                self.sprite.step_frame()
+            if self.clock.return_mod(4):
+                if self.direction == "right":
+                    self.sprite.step_frame()
+                    self.move_right(4)
+                else:
+                    self.sprite.dec_frame()
+                    self.move_left(4)
                 self.animation_frame += 1
-            self.move_right(1)
+
             if self.animation_frame == 8:
                 self.animation_frame = 0
                 self.state = "rest"
                 self.remove_move("a")
 
         elif self.state == "blink":
-            if self.clock.return_mod(10):
-                self.sprite.step_frame()
+            initial_pos = self.pos.copy()
+            self.fall = False
+            self.vel = Vector((0, 0))
+            if self.clock.return_mod(8):
+                if self.direction == "right":
+                    self.sprite.step_frame()
+                else:
+                    self.sprite.dec_frame()
                 self.animation_frame += 1
-            if self.animation_frame == 8:
+
+            if self.animation_frame == 5:
                 self.animation_frame = 0
                 self.state = "rest"
                 self.remove_move("s")
+                if self.direction == "right":
+                    self.pos = initial_pos + Vector((160, 0))  # teleport as many blocks across
+                else:
+                    self.pos = initial_pos + Vector((-160, 0))  # teleport as many blocks across
+                self.fall = True
+
         self.vector_transform = Vector((self.WIDTH / 2, self.HEIGHT / 2)) - (self.pos)
         self.clock.increment_clock()
 
@@ -134,8 +168,8 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
         for heart in self.heart_array:
             heart.draw(canvas)
 
-##################################################################
-# Player Move Handling
+    ##################################################################
+    # Player Move Handling
 
     def add_move(self, key):
         self.move_buffer.append(key)
@@ -145,21 +179,17 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
             self.move_buffer.remove(key)
 
     def handle_move(self, move):
-        if move == simplegui.KEY_MAP["left"]:
-            self.move_left(3)
         if move == simplegui.KEY_MAP["up"]:
             self.jump()
             self.remove_move(move)
+        if move == simplegui.KEY_MAP["left"]:
+            self.move_left(3)
         if move == simplegui.KEY_MAP["right"]:
             self.move_right(3)
         if move == simplegui.KEY_MAP["a"]:
             self.__setstate__("attack")
         if move == simplegui.KEY_MAP["s"]:
             self.__setstate__("blink")
-        if move == simplegui.KEY_MAP["e"]:
-            self.level_finished = True
-        if move == simplegui.KEY_MAP["k"]:
-            self.take_hit(0.5)
 
     def move_left(self, speed):
         self.direction = "left"
@@ -171,15 +201,16 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
         if math.fabs(self.vel.x) < self.terminal_vel:
             self.vel.add(Vector((speed, 0)))
 
-    def jump(self, type="single"):
+    def jump(self):
+        self.vel.y = 0
         self.vel.add(Vector((0, -3)))
 
     def __setstate__(self, state):
         self.state = state
 
-    def collide(self,platform, direction, collision_coord):
+    def collide(self, platform, direction, collision_coord):
         # self.vel.reflect(Vector((0,-1)))
-        if isinstance(platform,SpikeBlock):
+        if isinstance(platform, SpikeBlock):
             self.take_hit(1)
 
         # assume block
@@ -196,46 +227,45 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
             self.pos.y = collision_coord + self.radius
             self.vel.y = 0
 
-    def entity_collisions(self,object):
-        if isinstance(object,Vortex):
+    def entity_collisions(self, object):
+        if isinstance(object, Vortex):
             self.level_finished = True
-        if isinstance(object,Blip):
+        if isinstance(object, Blip):
             self.take_hit(0.5)
-
 
     def update_hearts(self):
         self.heart_array = []
         for full_heart in range(0, math.floor(self.lives)):
-            self.heart_array.append(PlayerHeart(full_heart,"full"))
+            self.heart_array.append(PlayerHeart(full_heart, "full"))
         if self.lives % 1 != 0:
-            self.heart_array.append(PlayerHeart(math.floor(self.lives),"half"))
+            self.heart_array.append(PlayerHeart(math.floor(self.lives), "half"))
 
     def take_hit(self, damage):
         self.lives -= damage
         self.update_hearts()
 
 
-
 #################################################
 # ENEMY
 
 class Enemy(Entity):
-    def __init__(self, x, y, sprite_progression=[0],radius=16):
+    def __init__(self, x, y, sprite_progression=[0], radius=16):
         self.x = x
         self.y = y
         self.radius = radius
-        self.pos = Vector((x,y))
+        self.pos = Vector((x, y))
         self.relative_pos = self.pos
         self.sprite_progression = sprite_progression
-        #self.sprite = Sprite(IMG, 9, 6)
+        # self.sprite = Sprite(IMG, 9, 6)
         self.sprite = Sprite_Sheet()
 
-    def draw(self,canvas):
-        self.sprite.draw(canvas, self.relative_pos, (self.radius*2, self.radius*2), [0, 4])
+    def draw(self, canvas):
+        self.sprite.draw(canvas, self.relative_pos, (self.radius * 2, self.radius * 2), [0, 4])
+
 
 class Blip(Enemy):
     def __init__(self, x, y, velocity):
-        self.vel = Vector((0,velocity))
+        self.vel = Vector((0, velocity))
         self.sprite_progression = [1, 2, 1, 4]
         super().__init__(x, y, self.sprite_progression)
 
@@ -243,7 +273,7 @@ class Blip(Enemy):
         self.pos += self.vel
 
     def collide(self, platform, direction, collision_coord):
-        self.vel.reflect(Vector((0,-1)))
+        self.vel.reflect(Vector((0, -1)))
 
 
 class Vortex(Entity):  # the goal of the level. Player collision with it will cause the level to increment.
@@ -253,16 +283,15 @@ class Vortex(Entity):  # the goal of the level. Player collision with it will ca
         self.pos = Vector((x, y))
         self.relative_pos = self.pos.copy()
         self.internal_clock = Clock()
-        self.sprite = Sprite_Sheet([0,6])
+        self.sprite = Sprite_Sheet([0, 6])
         self.width = width
-        self.radius = width/2
+        self.radius = width / 2
 
     def draw(self, canvas):
         self.internal_clock.increment_clock()
         if self.internal_clock.return_mod(3):
-            if self.sprite.frame_index == [6,6]:
-                self.sprite.set_frame([0,6])
-            else: self.sprite.step_frame()
+            if self.sprite.frame_index == [6, 6]:
+                self.sprite.set_frame([0, 6])
+            else:
+                self.sprite.step_frame()
         self.sprite.draw(canvas, self.relative_pos, (self.width, self.width))
-
-
