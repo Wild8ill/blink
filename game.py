@@ -259,6 +259,8 @@ game = Game()
 game.setup_level()
 
 # Canvas and Drawing Setup
+music = simplegui.load_sound("./music/city.ogg")
+
 frame = simplegui.create_frame('Blink', WIDTH, HEIGHT)
 frame.set_draw_handler(game.draw)
 
