@@ -10,19 +10,27 @@ class Music:
             "cool": "music/song2.mpg"
         }
         # Music Setup
-        self.music = simplegui.load_sound(self.song_dict.get("main"))
-        self.music.set_volume(0.7)
-        self.isPlaying = True
+        self.currentSong = self.song_dict.get("cool") # The Current Song Address
+        self.song = simplegui.load_sound(self.currentSong) # The Current Song Loaded
 
+        # Default Song
+        self.song.set_volume(0.7)
+        self.isPlaying = False
+
+    # Load the song
     def load_song(self, song):
-        self.music = self.song_dict.get(song)
+        self.currentSong = self.song_dict.get(song)
+        self.song = simplegui.load_sound(self.currentSong)
 
     def status(self):
         return self.isPlaying
 
-    def play(self):
-        self.isPlaying = False
-        self.music.play()
+    # Play the song
+    def play_song(self):
+        self.isPlaying = True
+        self.song.play()
 
-    def stop(self):
-        self.music.stop()
+    # Stop the song
+    def stop_song(self):
+        self.isPlaying = False
+        self.song.stop()

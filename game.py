@@ -135,15 +135,12 @@ class Game:
         self.entityArr = []
 
         # INIT MUSIC
-        self.music = Music()
+        self.backgroundMusic = Music()
 
 
     # Handles the drawing of the game
     def draw(self, canvas):
-        # Starting Music
-        if self.music.status():
-            print("Play Music")
-            self.music.play()
+
 
         # Only draw objects that are in the cameras view
 
@@ -188,6 +185,11 @@ class Game:
 
     # What to do every update
     def update(self):
+        # Starting Music
+        if not self.backgroundMusic.status():
+            print("Play Music")
+            self.backgroundMusic.play_song()
+            
         self.interaction.update() # Check every interaction
         self.camera.update()
 
