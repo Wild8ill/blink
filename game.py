@@ -9,6 +9,7 @@ from map_constructor import *
 from platforms import *
 from entity import *
 from util import *
+from music import *
 
 WIDTH = 800
 HEIGHT = 450
@@ -135,9 +136,14 @@ class Game:
         self.platformArr = []
         self.entityArr = []
 
-        
+        # INIT MUSIC
+        self.backgroundMusic = Music()
+
+
     # Handles the drawing of the game
     def draw(self, canvas):
+
+
         # Only draw objects that are in the cameras view
 
         draw_above_player = [] # for exceptional things to be drawn over player
@@ -181,6 +187,11 @@ class Game:
 
     # What to do every update
     def update(self):
+        # Starting Music
+        if not self.backgroundMusic.status():
+            print("Play Music")
+            self.backgroundMusic.play_song()
+            
         self.interaction.update() # Check every interaction
         self.camera.update()
 
@@ -263,7 +274,7 @@ class Events:
 game = Game()
 game.setup_level()
 
-# Canvas and Drawing Setup
+
 frame = simplegui.create_frame('Blink', WIDTH, HEIGHT)
 frame.set_draw_handler(game.draw)
 
