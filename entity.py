@@ -13,7 +13,7 @@ from sprite_sheet import *
 #############################################################################################
 # Player
 class Entity: # base class that encompasses players and enemies
-    def collide(self):
+    def collide(self, platform, direction, vec_mult):
         pass
     def entity_collisions(self,object):
         pass
@@ -33,7 +33,7 @@ class PlayerHeart:
 
 
 class Player(Entity):  # model the character as a ball for now convenient hitboxes
-    def __init__(self, pos=Vector((0, 0)), vel=Vector((0, 0)), radius=32, columns=1, row=1, width=0,height=0, map=None):
+    def __init__(self, pos=Vector((0, 0)), vel=Vector((0, -1)), radius=32, columns=1, row=1, width=0,height=0, map=None):
         self.pos = pos
         self.vel = vel
         self.radius = radius
@@ -52,6 +52,7 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
         self.level_finished = False
         self.relative_pos = Vector((width/2,height/2))
 
+        self.onFloor = False
         self.direction = "right"
 
         self.lives = 3 # amount of lives
@@ -75,15 +76,24 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
         # Removing X Velocity over time
             # Removes 1/2 each loop
             # When at less than 0.1 set to 0
-        if (self.vel.x > 0):
-            if(self.vel.x < 0.1):
+
+        # RIGHT
+        if (abs(self.vel.x) > 0):
+            if(abs(self.vel.x) < 0.1):
+                # Cancel all movement
                 self.vel.subtract(Vector((self.vel.x, 0)))
             else:
                 tmpx = self.vel.x / 2
                 self.vel.subtract(Vector((tmpx, 0)))
-
-        # Adds some "Gravity"
-        self.vel.subtract(Vector((0, -0.0981)))
+        
+        # VERTICAL
+        gravity = Vector((0, -0.0981))
+        if not self.onFloor:
+            print("Gravity")
+            self.vel.subtract(gravity)
+        else:
+            print("No Gravity")
+            pass
 
         self.MAP.update_positions()  # calculates all relative positions for objects, now that player is set up properly
 
@@ -177,12 +187,26 @@ class Player(Entity):  # model the character as a ball for now convenient hitbox
     def __setstate__(self, state):
         self.state = state
 
-    def collide(self):
-        # self.vel.reflect(Vector((0,-1)))
-        self.vel = Vector((0,0))
-        self.pos.y -= 0.1
-        pass
-
+    def collide(self, platform, direction, vec_mult):
+        player_radius = self.radius # Player radius
+        platform_pos = platform.relative_pos.copy().x # Relative Pos of platofrm
+        block_w  = platform.block_width / 2 # Block Width / 2
+        if direction == "top":
+            self.onFloor = True
+            self.pos.y -= 0.5
+        if direction == "left":
+            self.pos.x -= 3
+            print(block_w)
+        if direction == "right":
+            self.pos.x += 3
+        if direction == "bottom":
+            new_pos_y = platform_pos + block_w + player_radius
+            self.relative_pos.y = new_pos_y 
+            self.pos.y += 0.5
+        
+        # Multiples the Axis of movement by 0 to cancel out movement, aka makes it equal to 0
+        self.vel = Vector((self.vel.x * vec_mult.x, self.vel.y * vec_mult.y))
+        
     def entity_collisions(self,object):
         if isinstance(object,Vortex):
             self.level_finished = True
@@ -224,10 +248,11 @@ class Blip(Enemy):
         self.sprite_progression = [1, 2, 1, 4]
         super().__init__(x, y, self.sprite_progression)
 
+
     def update(self):
         self.pos += self.vel
 
-    def collide(self):
+    def collide(self, platform, direction, vec_mult):
         self.vel.reflect(Vector((0,-1)))
 
 
@@ -242,6 +267,7 @@ class Vortex(Entity):  # the goal of the level. Player collision with it will ca
         self.width = width
         self.radius = width/2
 
+
     def draw(self, canvas):
         self.internal_clock.increment_clock()
         if self.internal_clock.return_mod(3):
@@ -249,8 +275,3 @@ class Vortex(Entity):  # the goal of the level. Player collision with it will ca
                 self.sprite.set_frame([0,6])
             else: self.sprite.step_frame()
         self.sprite.draw(canvas, self.relative_pos, (self.width, self.width))
-
-    def collide(self):
-        print("you're inside me")
-
-

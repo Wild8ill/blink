@@ -72,18 +72,34 @@ class Collidable:
         self.isColliding = False
 
 class PlatformCollidable(Collidable):    
-    # Obj 1 = Entity = Sphere
+    # Obj 1 = Entity = Spheree
     # Obj 2 = Platform = Rectangle 
     def update(self):
         # @TODO: Create logic for comparing objects to check collision that works
         object = self.obj_1
         platform = self.obj_2
         line_tuple = platform.return_hitbox()
+        direction = None
+        vec_mult = Vector((1, 1))
         for line in line_tuple:
-            if line.distance_to_object(object.relative_pos) < object.radius and line.within_points(object.relative_pos):
+            if line.distance_to_object(object.relative_pos) <= object.radius and line.within_points(object.relative_pos):
                 if not self.isColliding:
+                    self.onFloor = False
                     #object.vel = Vector((0,0))
-                    object.collide()
+                    if line == line_tuple[0]:
+                        direction = "left"
+                        vec_mult.x -= 1 
+                    if line == line_tuple[1]:
+                        direction = "top"
+                        vec_mult.y -= 1
+                        self.onFloor = True
+                    if line == line_tuple[2]:
+                        direction = "right"
+                        vec_mult.x -= 1 
+                    if line == line_tuple[3]:
+                        direction = "bottom"
+                        vec_mult.x -= 1 
+                    object.collide(platform, direction, vec_mult)
                      # TODO: ADD LOGIC FOR WHAT TO DO ON COLLISION
                     self.isColliding = True
             else:
@@ -171,6 +187,7 @@ class Game:
 
     # What to do every update
     def update(self):
+        self.player.onFloor = False
         self.interaction.update() # Check every interaction
         self.camera.update()
 
